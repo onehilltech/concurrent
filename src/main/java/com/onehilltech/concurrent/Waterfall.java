@@ -1,5 +1,6 @@
 package com.onehilltech.concurrent;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class Waterfall
@@ -72,18 +73,30 @@ public class Waterfall
   /**
    * Execute the waterfall.
    *
-   * @param callback
+   * @param seed              Value to provide first task
+   * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (Object seed, CompletionCallback callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
 
-    TaskManager taskManager = new TaskManager (this.tasks_, callback);
+    TaskManager taskManager = new TaskManager (this.tasks_, seed, callback);
     this.executor_.execute (taskManager);
 
     return new FutureImpl (taskManager);
+  }
+
+  /**
+   * Execute the waterfall.
+   *
+   * @param callback          Callback for the task
+   * @return
+   */
+  public Future execute (CompletionCallback callback)
+  {
+    return this.execute (null, callback);
   }
 
   private class TaskManager
@@ -97,10 +110,11 @@ public class Waterfall
     private boolean isCancelled_ = false;
     private Exception failure_;
 
-    private TaskManager (Task [] tasks, CompletionCallback done)
+    private TaskManager (Task [] tasks, Object seed, CompletionCallback callback)
     {
       this.tasks_ = tasks;
-      this.completionCallback_ = done;
+      this.completionCallback_ = callback;
+      this.lastResult_ = seed;
     }
 
     boolean isDone ()
