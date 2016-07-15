@@ -1,7 +1,21 @@
 package com.onehilltech.concurrent;
 
-public interface Future
+public class Future
 {
-  boolean isDone ();
-  void cancel ();
+  private TaskManager taskManager_;
+
+  Future (TaskManager taskManager)
+  {
+    this.taskManager_ = taskManager;
+  }
+
+  public boolean isDone ()
+  {
+    return this.taskManager_.isDone ();
+  }
+
+  public void cancel ()
+  {
+    this.taskManager_.cancel ();
+  }
 }

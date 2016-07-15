@@ -17,8 +17,13 @@ public class Concurrent
     this.executor_ = executor;
   }
 
-  public Waterfall waterfall (Waterfall.Task ... tasks)
+  public Waterfall waterfall (Task ... tasks)
   {
     return new Waterfall (this.executor_, tasks);
+  }
+
+  public <T> ForEach <T> forEach (Task <T> task)
+  {
+    return new ForEach<T> (this.executor_, task);
   }
 }

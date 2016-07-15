@@ -23,55 +23,21 @@ public class Waterfall
   }
 
   /**
-   * Callback used by task to signal completion.
-   */
-  public interface TaskCallback
-  {
-    /**
-     * Mark the task as done.
-     *
-     * @param result      Result passed to next Task, or CompletionCallback
-     */
-    void done (Object result);
-
-    /**
-     * Mark the task a failed.
-     *
-     * @param e
-     */
-    void fail (Exception e);
-  }
-
-  /**
-   * Interface for the tasks executed in the waterfall.
-   */
-  public interface Task
-  {
-    /**
-     * Entry point for task.
-     *
-     * @param lastResult      Result from last task, null if first task
-     * @param callback        Callback used for completion
-     */
-    void run (Object lastResult, TaskCallback callback);
-  }
-
-  /**
    * Execute the waterfall.
    *
    * @param seed              Value to provide first task
    * @param callback          Callback for the task
-   * @return
+   * @return                  Future for managing tasks
    */
-  public Future execute (Object seed, ResultCallback callback)
+  public Future execute (Object seed, CompletionCallback callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
 
-    TaskManager taskManager = new TaskManager (this.tasks_, seed, callback);
+    TaskManagerImpl taskManager = new TaskManagerImpl (this.executor_, this.tasks_, seed, callback);
     this.executor_.execute (taskManager);
 
-    return new FutureImpl (taskManager);
+    return new Future (taskManager);
   }
 
   /**
@@ -80,109 +46,45 @@ public class Waterfall
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (ResultCallback callback)
+  public Future execute (CompletionCallback callback)
   {
     return this.execute (null, callback);
   }
 
-  private class TaskManager
-      implements Runnable, TaskCallback
+  /**
+   * Implementation of the TaskManager for the waterfall
+   */
+  private class TaskManagerImpl extends TaskManager
   {
     private int currentTask_ = 0;
     private Task [] tasks_;
-    private ResultCallback resultCallback_;
 
-    private Object lastResult_;
-    private boolean isCancelled_ = false;
-    private Exception failure_;
-
-    private TaskManager (Task [] tasks, Object seed, ResultCallback callback)
+    private TaskManagerImpl (Executor executor, Task [] tasks, Object seed, CompletionCallback callback)
     {
+      super (executor, callback);
       this.tasks_ = tasks;
-      this.resultCallback_ = callback;
-      this.lastResult_ = seed;
+      this.result_ = seed;
     }
 
-    boolean isDone ()
+    public boolean isDone ()
     {
       return this.currentTask_ >= this.tasks_.length;
     }
 
-    void cancel ()
-    {
-      this.isCancelled_ = true;
-    }
-
     @Override
-    public void run ()
+    public void onRun ()
     {
-      if (this.failure_ != null)
-      {
-        this.resultCallback_.onFail (this.failure_);
-      }
-      else if (this.isCancelled_)
-      {
-        this.resultCallback_.onCancel ();
-      }
-      else if (this.isDone ())
-      {
-        this.resultCallback_.onComplete (this.lastResult_);
-      }
-      else
-      {
-        try
-        {
-          // Get the current task, and run the task. The task will callback into
-          // this task manager when the task completes, or fails. We also catch
-          // all exceptions.
-          Task task = this.tasks_[this.currentTask_++];
-          task.run (this.lastResult_, this);
-        }
-        catch (Exception e)
-        {
-          this.failure_ = e;
-          executor_.execute (this);
-        }
-      }
-    }
+      // Get the current task, and run the task. The task will callback into
+      // this task manager when the task completes, or fails. We also catch
+      // all exceptions.
+      Task task = this.tasks_[this.currentTask_++];
+      task.run (this.result_);
 
-    @Override
-    public void done (Object result)
-    {
-      // The current task is complete, save the result for the next task or
-      // passing back the client. We then need to execute the task manager
-      // again.
-      this.lastResult_ = result;
-      executor_.execute (this);
-    }
+      // Store the result of the task as the last result.
+      this.result_ = task.getResult ();
 
-    @Override
-    public void fail (Exception reason)
-    {
-      this.failure_ = reason;
-      executor_.execute (this);
-    }
-  }
-
-  private class FutureImpl implements Future
-  {
-    private final TaskManager taskManager_;
-
-    FutureImpl (TaskManager taskManager)
-    {
-      this.taskManager_ = taskManager;
-    }
-
-    @Override
-    public boolean isDone ()
-    {
-      return this.taskManager_.isDone ();
-    }
-
-    @Override
-    public void cancel ()
-    {
-      this.taskManager_.cancel ();
+      // Execute the task manager again.
+      this.executor_.execute (this);
     }
   }
 }

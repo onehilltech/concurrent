@@ -21,30 +21,30 @@ public class WaterfallTest
   {
     final Waterfall waterfall = new Waterfall (
         Executors.newCachedThreadPool (),
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
             Assert.assertNull (lastResult);
             System.err.println ("Running task one...");
 
-            callback.done (1);
+            this.setResult (1);
           }
         },
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
             Assert.assertEquals (1, lastResult);
             System.err.println ("Running task one...");
 
-            callback.done (2);
+            this.setResult (2);
           }
         });
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new ResultCallback ()
+      Future future = waterfall.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -83,24 +83,24 @@ public class WaterfallTest
   {
     final Waterfall waterfall = new Waterfall (
         Executors.newCachedThreadPool (),
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
-            callback.done (1);
+            this.setResult (1);
           }
         },
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
-            callback.fail (new Exception ("IDK"));
+            throw new RuntimeException ("IDK");
           }
         });
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new ResultCallback ()
+      Future future = waterfall.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -139,14 +139,13 @@ public class WaterfallTest
   {
     final Waterfall waterfall = new Waterfall (
         Executors.newCachedThreadPool (),
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
             try
             {
               Thread.sleep (1000);
-              callback.done (null);
             }
             catch (InterruptedException e)
             {
@@ -154,17 +153,17 @@ public class WaterfallTest
             }
           }
         },
-        new Waterfall.Task () {
+        new Task () {
           @Override
-          public void run (Object lastResult, Waterfall.TaskCallback callback)
+          public void run (Object lastResult)
           {
-            callback.done (lastResult);
+            this.setResult (lastResult);
           }
         });
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new ResultCallback ()
+      Future future = waterfall.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)

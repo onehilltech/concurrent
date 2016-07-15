@@ -1,8 +1,8 @@
 package com.onehilltech.concurrent;
 
-public interface BaseCallback
+public interface CompletionCallback
 {
   void onFail (Exception e);
   void onCancel ();
-  void onComplete ();
+  void onComplete (Object result);
 }
