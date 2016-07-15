@@ -29,10 +29,12 @@ public class ForEachTest
                        new Task<Integer> ()
                        {
                          @Override
-                         public void run (Integer item)
+                         public void run (Integer item, CompletionCallback callback)
                          {
                            System.out.println (item);
                            sum.addAndGet (item);
+
+                           callback.onComplete (null);
                          }
                        }).execute (Arrays.asList (nums), new CompletionCallback ()
         {

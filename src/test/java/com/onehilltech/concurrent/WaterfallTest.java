@@ -23,22 +23,22 @@ public class WaterfallTest
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
             Assert.assertNull (lastResult);
             System.err.println ("Running task one...");
 
-            this.setResult (1);
+            callback.onComplete (1);
           }
         },
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
             Assert.assertEquals (1, lastResult);
             System.err.println ("Running task one...");
 
-            this.setResult (2);
+            callback.onComplete (2);
           }
         });
 
@@ -85,16 +85,16 @@ public class WaterfallTest
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
-            this.setResult (1);
+            callback.onComplete (1);
           }
         },
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
-            throw new RuntimeException ("IDK");
+            callback.onFail (new Exception ("IDK"));
           }
         });
 
@@ -141,11 +141,12 @@ public class WaterfallTest
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
             try
             {
               Thread.sleep (1000);
+              callback.onComplete (null);
             }
             catch (InterruptedException e)
             {
@@ -155,9 +156,9 @@ public class WaterfallTest
         },
         new Task () {
           @Override
-          public void run (Object lastResult)
+          public void run (Object lastResult, CompletionCallback callback)
           {
-            this.setResult (lastResult);
+            callback.onComplete (lastResult);
           }
         });
 

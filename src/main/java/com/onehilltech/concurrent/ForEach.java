@@ -42,6 +42,7 @@ public class ForEach <T>
   }
 
   private class TaskManagerImpl extends TaskManager
+    implements CompletionCallback
   {
     private Task<T> task_;
     private Collection<T> coll_;
@@ -80,6 +81,15 @@ public class ForEach <T>
         this.executor_.execute (new ItemTask (item));
     }
 
+    @Override
+    public void onComplete (Object result)
+    {
+      int remainingCount = this.remainingCount_.decrementAndGet ();
+
+      if (0 == remainingCount)
+        this.done ();
+    }
+
     /**
      * Run the item on its own thread.
      */
@@ -98,21 +108,13 @@ public class ForEach <T>
         try
         {
           if (canContinue ())
-            task_.run (this.item_);
+            task_.run (this.item_, TaskManagerImpl.this);
         }
         catch (Exception e)
         {
           fail (e);
         }
-        finally
-        {
-          int remaining = remainingCount_.decrementAndGet ();
-
-          if (remaining == 0)
-            done ();
-        }
       }
-
     }
   }
 }

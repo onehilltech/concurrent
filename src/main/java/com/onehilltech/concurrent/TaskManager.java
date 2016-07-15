@@ -2,7 +2,8 @@ package com.onehilltech.concurrent;
 
 import java.util.concurrent.Executor;
 
-abstract class TaskManager implements Runnable
+abstract class TaskManager
+    implements Runnable, CompletionCallback
 {
   protected boolean isCancelled_ = false;
   protected Exception failure_;
@@ -28,12 +29,18 @@ abstract class TaskManager implements Runnable
       return;
 
     this.isCancelled_ = true;
-    this.onCancel ();
   }
 
-  protected void onCancel ()
+  @Override
+  public void onFail (Exception e)
   {
+    this.fail (e);
+  }
 
+  @Override
+  public void onCancel ()
+  {
+    // Do nothing...
   }
 
   @Override
