@@ -44,7 +44,7 @@ public class WaterfallTest
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new Waterfall.CompletionCallback ()
+      Future future = waterfall.execute (new ResultCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -100,7 +100,7 @@ public class WaterfallTest
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new Waterfall.CompletionCallback ()
+      Future future = waterfall.execute (new ResultCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -164,7 +164,7 @@ public class WaterfallTest
 
     synchronized (waterfall)
     {
-      Future future = waterfall.execute (new Waterfall.CompletionCallback ()
+      Future future = waterfall.execute (new ResultCallback ()
       {
         @Override
         public void onComplete (Object result)
