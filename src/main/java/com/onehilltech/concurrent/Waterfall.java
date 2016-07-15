@@ -1,6 +1,5 @@
 package com.onehilltech.concurrent;
 
-import java.util.Objects;
 import java.util.concurrent.Executor;
 
 public class Waterfall
@@ -21,19 +20,6 @@ public class Waterfall
   {
     this.executor_ = executor;
     this.tasks_ = tasks;
-  }
-
-  /**
-   * Callback for completing tasks in waterfall.
-   */
-  public interface CompletionCallback extends BaseCallback
-  {
-    /**
-     * The waterfall execution is complete.
-     *
-     * @param result      Result from last task in waterfall
-     */
-    void onComplete (Object result);
   }
 
   /**
@@ -77,7 +63,7 @@ public class Waterfall
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (Object seed, CompletionCallback callback)
+  public Future execute (Object seed, ResultCallback callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -94,7 +80,7 @@ public class Waterfall
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (ResultCallback callback)
   {
     return this.execute (null, callback);
   }
@@ -104,16 +90,16 @@ public class Waterfall
   {
     private int currentTask_ = 0;
     private Task [] tasks_;
-    private CompletionCallback completionCallback_;
+    private ResultCallback resultCallback_;
 
     private Object lastResult_;
     private boolean isCancelled_ = false;
     private Exception failure_;
 
-    private TaskManager (Task [] tasks, Object seed, CompletionCallback callback)
+    private TaskManager (Task [] tasks, Object seed, ResultCallback callback)
     {
       this.tasks_ = tasks;
-      this.completionCallback_ = callback;
+      this.resultCallback_ = callback;
       this.lastResult_ = seed;
     }
 
@@ -132,15 +118,15 @@ public class Waterfall
     {
       if (this.failure_ != null)
       {
-        this.completionCallback_.onFail (this.failure_);
+        this.resultCallback_.onFail (this.failure_);
       }
       else if (this.isCancelled_)
       {
-        this.completionCallback_.onCancel ();
+        this.resultCallback_.onCancel ();
       }
       else if (this.isDone ())
       {
-        this.completionCallback_.onComplete (this.lastResult_);
+        this.resultCallback_.onComplete (this.lastResult_);
       }
       else
       {
