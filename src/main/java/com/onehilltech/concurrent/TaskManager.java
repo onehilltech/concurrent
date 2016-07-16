@@ -5,8 +5,8 @@ import java.util.concurrent.Executor;
 abstract class TaskManager
     implements Runnable, CompletionCallback
 {
-  protected boolean isCancelled_ = false;
-  protected Exception failure_;
+  private boolean isCancelled_ = false;
+  private Exception failure_;
 
   protected abstract void onRun ();
 

@@ -79,8 +79,6 @@ public class Waterfall
       // all exceptions.
       Task task = this.tasks_[this.currentTask_++];
       task.run (this.result_, this);
-
-      this.executor_.execute (this);
     }
 
     @Override

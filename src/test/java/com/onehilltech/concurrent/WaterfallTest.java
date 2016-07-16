@@ -36,7 +36,7 @@ public class WaterfallTest
           public void run (Object lastResult, CompletionCallback callback)
           {
             Assert.assertEquals (1, lastResult);
-            System.err.println ("Running task one...");
+            System.err.println ("Running task two...");
 
             callback.onComplete (2);
           }
@@ -49,6 +49,8 @@ public class WaterfallTest
         @Override
         public void onComplete (Object result)
         {
+          System.err.println ("Task completed...");
+
           Assert.assertEquals (2, result);
           callbackCalled_ = true;
 
