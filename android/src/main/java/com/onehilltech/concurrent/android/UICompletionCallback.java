@@ -7,7 +7,8 @@ import android.os.Message;
 import com.onehilltech.concurrent.CompletionCallback;
 
 /**
- * CompletionCallback that runs its methods on the UI thread.
+ * Specialization of the CompletionCallback that executes its callback methods
+ * on the UI thread.
  */
 public abstract class UICompletionCallback implements CompletionCallback
 {
@@ -38,13 +39,22 @@ public abstract class UICompletionCallback implements CompletionCallback
 
   /**
    * The task are complete
-   * @param result
+   *
+   * @param result      Result, depending on concurrent strategy
    */
   public abstract void onUIComplete (Object result);
 
+  /**
+   * The task was cancelled.
+   */
   public abstract void onUICancel ();
 
-  public abstract void onUIFail (Throwable e);
+  /**
+   * The task failed.
+   *
+   * @param reason         Reason for the failure
+   */
+  public abstract void onUIFail (Throwable reason);
 
   @Override
   public final void onCancel ()
