@@ -6,7 +6,7 @@ abstract class TaskManager
     implements Runnable, CompletionCallback
 {
   private boolean isCancelled_ = false;
-  private Exception failure_;
+  private Throwable failure_;
 
   protected abstract void onRun ();
 
@@ -32,7 +32,7 @@ abstract class TaskManager
   }
 
   @Override
-  public void onFail (Exception e)
+  public void onFail (Throwable e)
   {
     this.fail (e);
   }
@@ -76,7 +76,7 @@ abstract class TaskManager
    *
    * @param e
    */
-  protected synchronized void fail (Exception e)
+  protected synchronized void fail (Throwable e)
   {
     if (this.failure_ != null)
       return;

@@ -61,7 +61,7 @@ public class WaterfallTest
         }
 
         @Override
-        public void onFail (Exception e)
+        public void onFail (Throwable e)
         {
           Assert.fail ();
         }
@@ -111,7 +111,7 @@ public class WaterfallTest
         }
 
         @Override
-        public void onFail (Exception e)
+        public void onFail (Throwable e)
         {
           Assert.assertEquals (e.getMessage (), "IDK");
           callbackCalled_ = true;
@@ -175,7 +175,7 @@ public class WaterfallTest
         }
 
         @Override
-        public void onFail (Exception e)
+        public void onFail (Throwable e)
         {
           Assert.fail ();
         }

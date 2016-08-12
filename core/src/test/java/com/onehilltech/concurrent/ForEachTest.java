@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ForEachTest
@@ -38,7 +39,7 @@ public class ForEachTest
                        }).execute (Arrays.asList (nums), new CompletionCallback ()
         {
           @Override
-          public void onFail (Exception e)
+          public void onFail (Throwable e)
           {
             Assert.fail ();
           }

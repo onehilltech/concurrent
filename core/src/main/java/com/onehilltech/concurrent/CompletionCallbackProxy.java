@@ -23,7 +23,7 @@ public class CompletionCallbackProxy implements CompletionCallback
   }
 
   @Override
-  public void onFail (Exception e)
+  public void onFail (Throwable e)
   {
     this.callback_.onFail (e);
   }
