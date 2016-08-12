@@ -2,7 +2,7 @@ package com.onehilltech.concurrent;
 
 import java.util.concurrent.Executor;
 
-abstract class TaskManager
+abstract class TaskManager <T extends Object>
     implements Runnable, CompletionCallback
 {
   private boolean isCancelled_ = false;
@@ -12,7 +12,7 @@ abstract class TaskManager
 
   protected abstract boolean isDone ();
 
-  protected Object result_;
+  protected T result_;
 
   private CompletionCallback completionCallback_;
   protected Executor executor_;
