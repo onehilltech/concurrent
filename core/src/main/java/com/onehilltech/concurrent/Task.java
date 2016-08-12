@@ -1,11 +1,19 @@
 package com.onehilltech.concurrent;
 
+/**
+ * Single unit of work used by the different concurrent strategies.
+ *
+ * @param <T>
+ */
 public abstract class Task <T>
 {
+  /// Name of the task.
   private String name_;
 
   /**
-   * Create an unnamed task.
+   * Default constructor.
+   *
+   * The constructed task is an unnamed task.
    */
   public Task ()
   {
@@ -13,7 +21,9 @@ public abstract class Task <T>
   }
 
   /**
-   * Create a new task.
+   * Initializing constructor.
+   *
+   * The constructed task is a named task.
    *
    * @param name
    */
@@ -22,6 +32,11 @@ public abstract class Task <T>
     this.name_ = name;
   }
 
+  /**
+   * Get the name of the task.
+   *
+   * @return
+   */
   public String getName ()
   {
     return this.name_;
