@@ -25,13 +25,12 @@ public class ForEachTest
     final AtomicInteger sum = new AtomicInteger (0);
 
     Future future =
-        new ForEach<> (Executors.newCachedThreadPool (),
+        new ForEach<Integer> (Executors.newCachedThreadPool (),
                        new Task<Integer> ()
                        {
                          @Override
                          public void run (Integer item, CompletionCallback callback)
                          {
-                           System.out.println (item);
                            sum.addAndGet (item);
 
                            callback.onComplete (null);
