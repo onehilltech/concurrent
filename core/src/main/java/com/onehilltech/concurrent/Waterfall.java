@@ -77,7 +77,7 @@ public class Waterfall
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      Task task = this.tasks_[this.currentTask_++];
+      Task task = this.tasks_[this.currentTask_];
       task.run (this.result_, this);
     }
 
@@ -87,7 +87,9 @@ public class Waterfall
       // Store the result of the task as the last result.
       this.result_ = result;
 
-      // Execute the task manager again.
+      // Increment to the next task, and execute the task manager again.
+      ++ this.currentTask_;
+
       this.executor_.execute (this);
     }
   }
