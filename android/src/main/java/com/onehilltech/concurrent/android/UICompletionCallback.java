@@ -6,6 +6,9 @@ import android.os.Message;
 
 import com.onehilltech.concurrent.CompletionCallback;
 
+/**
+ * CompletionCallback that runs its methods on the UI thread.
+ */
 public abstract class UICompletionCallback implements CompletionCallback
 {
   private static final int RESULT_COMPLETE = 0;
@@ -16,8 +19,6 @@ public abstract class UICompletionCallback implements CompletionCallback
     @Override
     public void handleMessage (Message msg)
     {
-      super.handleMessage (msg);
-
       switch (msg.what)
       {
         case RESULT_COMPLETE:
