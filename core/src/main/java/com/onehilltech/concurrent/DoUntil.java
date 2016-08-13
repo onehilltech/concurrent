@@ -53,34 +53,41 @@ public class DoUntil
     return new Future (taskManager);
   }
 
+  private interface Iteration
+  {
+    boolean evaluate ();
+  }
+
   /**
    * Implementation of the TaskManager for the waterfall
    */
   private class TaskManagerImpl extends TaskManager
   {
-    private final Conditional conditional_;
+    private final Conditional cond_;
+
     private final Task task_;
 
+    private Iteration iteration_ = new FirstIteration ();
+
     private TaskManagerImpl (Executor executor,
-                             Conditional conditional,
+                             Conditional cond,
                              Task task,
                              CompletionCallback callback)
     {
       super (executor, callback);
-      this.conditional_ = conditional;
+      this.cond_ = cond;
       this.task_ = task;
     }
 
     @Override
     public boolean isDone ()
     {
-      return this.conditional_.evaluate ();
+      return this.iteration_.evaluate ();
     }
 
     @Override
     public void onRun ()
     {
-      // Run the task since the condition is still true.
       this.task_.run (null, this);
     }
 
@@ -89,6 +96,29 @@ public class DoUntil
     {
       this.result_ = result;
       this.executor_.execute (this);
+    }
+
+    private class FirstIteration implements Iteration
+    {
+      @Override
+      public boolean evaluate ()
+      {
+        // Replace the iteration with the state for the remaining iterations.
+        iteration_ = new RemainingIterations ();
+
+        // We always return false for the first iteration. This will ensure the
+        // task executes at least once.
+        return false;
+      }
+    }
+
+    private class RemainingIterations implements Iteration
+    {
+      @Override
+      public boolean evaluate ()
+      {
+        return cond_.evaluate ();
+      }
     }
   }
 }

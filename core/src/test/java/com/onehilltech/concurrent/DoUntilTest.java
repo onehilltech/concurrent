@@ -28,7 +28,7 @@ public class DoUntilTest
           @Override
           public boolean evaluate ()
           {
-            return current_ == 5;
+            return current_ > 0;
           }
         },
         new Task () {
@@ -74,10 +74,10 @@ public class DoUntilTest
       });
 
       if (!future.isDone ())
-        doUntil.wait (5000);
+        doUntil.wait ();
 
       Assert.assertTrue (this.callbackCalled_);
-      Assert.assertEquals (5, this.current_);
+      Assert.assertEquals (1, this.current_);
       Assert.assertTrue (future.isDone ());
     }
   }
