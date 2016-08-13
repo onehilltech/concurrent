@@ -5,10 +5,17 @@ import java.util.concurrent.Executors;
 
 public class Concurrent
 {
+  /// Target executor object.
   private Executor executor_;
 
+  /// Singleton instance.
   private static Concurrent instance_;
 
+  /**
+   * Get the default instance of the Concurrent.
+   *
+   * @return
+   */
   public static Concurrent getInstance ()
   {
     if (instance_ != null)
@@ -18,16 +25,29 @@ public class Concurrent
     return instance_;
   }
 
+  /**
+   * Default constructor.
+   */
   public Concurrent ()
   {
     this (Executors.newCachedThreadPool ());
   }
 
+  /**
+   * Construct Concurrent on an existing Executor.
+   *
+   * @param executor        Target executor.
+   */
   public Concurrent (Executor executor)
   {
     this.executor_ = executor;
   }
 
+  /**
+   * Get the executor object.
+   *
+   * @return
+   */
   public Executor getExecutor ()
   {
     return this.executor_;
