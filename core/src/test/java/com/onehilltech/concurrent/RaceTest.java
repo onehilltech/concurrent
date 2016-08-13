@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.concurrent.Executors;
 
-public class ParallelTest
+public class RaceTest
 {
   private boolean callbackCalled_;
 
@@ -20,7 +20,7 @@ public class ParallelTest
   @Test
   public void testExecute () throws Exception
   {
-    final Parallel parallel = new Parallel (
+    final Race race = new Race (
         Executors.newCachedThreadPool (),
         new Task ("task-0") {
           @Override
@@ -53,9 +53,9 @@ public class ParallelTest
           }
         });
 
-    synchronized (parallel)
+    synchronized (race)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -64,16 +64,13 @@ public class ParallelTest
 
           HashMap <String, Object> map = (HashMap<String, Object>)result;
 
-          Assert.assertEquals (3, map.size ());
-          Assert.assertEquals (map.get ("task-0"), "0");
-          Assert.assertEquals (map.get ("task-1"), "1");
-          Assert.assertEquals (map.get ("task-2"), "2");
+          Assert.assertEquals (1, map.size ());
 
           callbackCalled_ = true;
 
-          synchronized (parallel)
+          synchronized (race)
           {
-            parallel.notify ();
+            race.notify ();
           }
         }
 
@@ -91,7 +88,7 @@ public class ParallelTest
       });
 
       if (!future.isDone ())
-        parallel.wait (5000);
+        race.wait (5000);
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -100,7 +97,7 @@ public class ParallelTest
   @Test
   public void testExecuteFail () throws Exception
   {
-    final Parallel parallel = new Parallel (
+    final Race race = new Race (
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
@@ -117,9 +114,9 @@ public class ParallelTest
           }
         });
 
-    synchronized (parallel)
+    synchronized (race)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -133,9 +130,9 @@ public class ParallelTest
           Assert.assertEquals (e.getMessage (), "IDK");
           callbackCalled_ = true;
 
-          synchronized (parallel)
+          synchronized (race)
           {
-            parallel.notify ();
+            race.notify ();
           }
         }
 
@@ -147,7 +144,7 @@ public class ParallelTest
       });
 
       if (!future.isDone ())
-        parallel.wait (5000);
+        race.wait (5000);
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -156,7 +153,7 @@ public class ParallelTest
   @Test
   public void testExecuteCancel () throws Exception
   {
-    final Parallel parallel = new Parallel (
+    final Race race = new Race (
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
@@ -181,9 +178,9 @@ public class ParallelTest
           }
         });
 
-    synchronized (parallel)
+    synchronized (race)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -202,18 +199,18 @@ public class ParallelTest
         {
           callbackCalled_ = true;
 
-          synchronized (parallel)
+          synchronized (race)
           {
-            parallel.notify ();
+            race.notify ();
           }
         }
       });
 
-      synchronized (parallel)
+      synchronized (race)
       {
         // Cancel the waterfall, and wait until notification.
         future.cancel ();
-        parallel.wait (5000);
+        race.wait (5000);
       }
 
       // Make sure the cancel callback is called.
