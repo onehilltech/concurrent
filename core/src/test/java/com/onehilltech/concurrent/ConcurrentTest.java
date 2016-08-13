@@ -44,7 +44,8 @@ public class ConcurrentTest
     Assert.assertEquals (Times.class, Concurrent.getInstance ().times (this.singleTask_).getClass ());
     Assert.assertEquals (Until.class, Concurrent.getInstance ().until (this.conditional_, this.singleTask_).getClass ());
     Assert.assertEquals (Waterfall.class, Concurrent.getInstance ().waterfall (this.singleTask_).getClass ());
-
+    Assert.assertEquals (While.class, Concurrent.getInstance ().whilst (this.conditional_, this.singleTask_).getClass ());
+    
     // Collections
     Assert.assertEquals (ForEach.class, Concurrent.getInstance ().forEach (this.singleTask_).getClass ());
   }

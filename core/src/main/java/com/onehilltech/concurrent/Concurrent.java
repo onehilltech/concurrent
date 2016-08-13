@@ -100,13 +100,18 @@ public class Concurrent
     return new Waterfall (this.executor_, tasks);
   }
 
+  public While whilst (Conditional cond, Task task)
+  {
+    return new While (this.executor_, cond, task);
+  }
+
   /// @}
 
   /// @{ Collections
 
   public <T> ForEach <T> forEach (Task <T> task)
   {
-    return new ForEach<T> (this.executor_, task);
+    return new ForEach<> (this.executor_, task);
   }
 
   /// @}
