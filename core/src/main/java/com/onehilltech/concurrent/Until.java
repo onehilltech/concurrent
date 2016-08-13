@@ -58,23 +58,23 @@ public class Until
    */
   private class TaskManagerImpl extends TaskManager
   {
-    private final Conditional conditional_;
+    private final Conditional until_;
     private final Task task_;
 
     private TaskManagerImpl (Executor executor,
-                             Conditional conditional,
+                             Conditional until,
                              Task task,
                              CompletionCallback callback)
     {
       super (executor, callback);
-      this.conditional_ = conditional;
+      this.until_ = until;
       this.task_ = task;
     }
 
     @Override
     public boolean isDone ()
     {
-      return !this.conditional_.evaluate ();
+      return this.until_.evaluate ();
     }
 
     @Override

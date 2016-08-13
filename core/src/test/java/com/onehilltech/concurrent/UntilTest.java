@@ -28,7 +28,7 @@ public class UntilTest
           @Override
           public boolean evaluate ()
           {
-            return remaining_ > 0;
+            return remaining_ == 0;
           }
         },
         new Task () {
@@ -38,7 +38,7 @@ public class UntilTest
             Assert.assertNull (unused);
 
             // Decrement the remaining.
-            remaining_ --;
+            -- remaining_;
 
             callback.onComplete ("DONE");
           }
@@ -92,7 +92,7 @@ public class UntilTest
           @Override
           public boolean evaluate ()
           {
-            return true;
+            return false;
           }
         },
         new Task () {
