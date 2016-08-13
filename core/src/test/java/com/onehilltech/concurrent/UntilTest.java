@@ -4,73 +4,59 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.concurrent.Executors;
 
-public class RaceTest
+public class UntilTest
 {
   private boolean callbackCalled_;
+  private int remaining_;
 
   @Before
   public void setup ()
   {
     this.callbackCalled_ = false;
+    this.remaining_ = 3;
   }
 
   @Test
   public void testExecute () throws Exception
   {
-    final Race race = new Race (
+    final Until until = new Until (
         Executors.newCachedThreadPool (),
-        new Task ("task-0") {
+        new Conditional ()
+        {
           @Override
-          public void run (Object unused, CompletionCallback callback)
+          public boolean evaluate ()
           {
-            Assert.assertNull (unused);
-            System.err.println ("Running task one...");
-
-            callback.onComplete ("0");
+            return remaining_ > 0;
           }
         },
-        new Task ("task-1") {
+        new Task () {
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
             Assert.assertNull (unused);
-            System.err.println ("Running task two...");
 
-            callback.onComplete ("1");
-          }
-        },
-        new Task ("task-2") {
-          @Override
-          public void run (Object unused, CompletionCallback callback)
-          {
-            Assert.assertNull (unused);
-            System.err.println ("Running task three...");
+            // Decrement the remaining.
+            remaining_ --;
 
-            callback.onComplete ("2");
+            callback.onComplete ("DONE");
           }
         });
 
-    synchronized (race)
+    synchronized (until)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
         {
-          Assert.assertEquals (HashMap.class, result.getClass ());
-
-          HashMap <String, Object> map = (HashMap<String, Object>)result;
-
-          Assert.assertEquals (1, map.size ());
-
+          Assert.assertEquals ("DONE", result);
           callbackCalled_ = true;
 
-          synchronized (race)
+          synchronized (until)
           {
-            race.notify ();
+            until.notify ();
           }
         }
 
@@ -88,35 +74,38 @@ public class RaceTest
       });
 
       if (!future.isDone ())
-        race.wait (5000);
+        until.wait (5000);
 
-      Assert.assertEquals (true, this.callbackCalled_);
+      Assert.assertTrue (this.callbackCalled_);
+      Assert.assertEquals (0, this.remaining_);
+      Assert.assertTrue (future.isDone ());
     }
   }
 
   @Test
   public void testExecuteFail () throws Exception
   {
-    final Race race = new Race (
+    final Until until = new Until (
         Executors.newCachedThreadPool (),
-        new Task () {
+        new Conditional ()
+        {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public boolean evaluate ()
           {
-            callback.onFail (new Exception ("IDK"));
+            return true;
           }
         },
         new Task () {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public void run (Object unused, CompletionCallback callback)
           {
             callback.onFail (new Exception ("IDK"));
           }
         });
 
-    synchronized (race)
+    synchronized (until)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -130,9 +119,9 @@ public class RaceTest
           Assert.assertEquals (e.getMessage (), "IDK");
           callbackCalled_ = true;
 
-          synchronized (race)
+          synchronized (until)
           {
-            race.notify ();
+            until.notify ();
           }
         }
 
@@ -144,7 +133,7 @@ public class RaceTest
       });
 
       if (!future.isDone ())
-        race.wait (5000);
+        until.wait (5000);
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -153,11 +142,19 @@ public class RaceTest
   @Test
   public void testExecuteCancel () throws Exception
   {
-    final Race race = new Race (
+    final Until until = new Until (
         Executors.newCachedThreadPool (),
+        new Conditional ()
+        {
+          @Override
+          public boolean evaluate ()
+          {
+            return true;
+          }
+        },
         new Task () {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public void run (Object unused, CompletionCallback callback)
           {
             try
             {
@@ -169,18 +166,11 @@ public class RaceTest
               throw new RuntimeException (e);
             }
           }
-        },
-        new Task () {
-          @Override
-          public void run (Object lastResult, CompletionCallback callback)
-          {
-            callback.onComplete (lastResult);
-          }
         });
 
-    synchronized (race)
+    synchronized (until)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -199,21 +189,16 @@ public class RaceTest
         {
           callbackCalled_ = true;
 
-          synchronized (race)
+          synchronized (until)
           {
-            race.notify ();
+            until.notify ();
           }
         }
       });
 
-      synchronized (race)
-      {
-        // Cancel the waterfall, and wait until notification.
-        future.cancel ();
-        race.wait (5000);
-      }
+      future.cancel ();
+      until.wait (5000);
 
-      // Make sure the cancel callback is called.
       Assert.assertEquals (true, this.callbackCalled_);
     }
   }

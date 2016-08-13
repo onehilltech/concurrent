@@ -85,6 +85,11 @@ public class Concurrent
     return new Times (this.executor_, task);
   }
 
+  public Until until (Conditional conditional, Task task)
+  {
+    return new Until (this.executor_, conditional, task);
+  }
+
   public Waterfall waterfall (Task ... tasks)
   {
     return new Waterfall (this.executor_, tasks);
