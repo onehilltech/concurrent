@@ -55,6 +55,7 @@ public class Concurrent
 
   /// @{ Control Flow
 
+  public Parallel parallel (Task ... tasks) { return new Parallel (this.executor_, tasks); }
   public Series series (Task ... tasks) { return new Series (this.executor_, tasks); }
   public Times times (Task task) { return new Times (this.executor_, task); }
   public Waterfall waterfall (Task ... tasks)
