@@ -70,6 +70,11 @@ public class Concurrent
     return new Race (this.executor_, tasks);
   }
 
+  public Retry retry (Task task)
+  {
+    return new Retry (this.executor_, task);
+  }
+
   public Series series (Task ... tasks)
   {
     return new Series (this.executor_, tasks);
