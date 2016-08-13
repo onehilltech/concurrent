@@ -55,9 +55,9 @@ public class Concurrent
 
   /// @{ Control Flow
 
-  public DoUntil doUntil (Conditional conditional, Task task)
+  public DoUntil doUntil (Conditional cond, Task task)
   {
-    return new DoUntil (this.executor_, conditional, task);
+    return new DoUntil (this.executor_, cond, task);
   }
 
   public Forever forever (Task task)
@@ -90,9 +90,9 @@ public class Concurrent
     return new Times (this.executor_, task);
   }
 
-  public Until until (Conditional conditional, Task task)
+  public Until until (Conditional cond, Task task)
   {
-    return new Until (this.executor_, conditional, task);
+    return new Until (this.executor_, cond, task);
   }
 
   public Waterfall waterfall (Task ... tasks)

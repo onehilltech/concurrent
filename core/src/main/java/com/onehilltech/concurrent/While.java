@@ -15,18 +15,20 @@ public class While
   /// The task to execute N times.
   private final Task task_;
 
-  private final Conditional while_;
+  /// Conditional controlling the loop
+  private final Conditional cond_;
 
   /**
    * Initializing constructor.
    *
    * @param executor        Target executor
+   * @param cond            Conditional controlling the loop
    * @param task            Task to execute
    */
-  public While (Executor executor, Conditional whilst, Task task)
+  public While (Executor executor, Conditional cond, Task task)
   {
     this.executor_ = executor;
-    this.while_ = whilst;
+    this.cond_ = cond;
     this.task_ = task;
   }
 
@@ -44,7 +46,7 @@ public class While
     TaskManagerImpl taskManager =
         new TaskManagerImpl (
             this.executor_,
-            this.while_,
+            this.cond_,
             this.task_,
             callback);
 
