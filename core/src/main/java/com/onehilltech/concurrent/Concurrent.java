@@ -60,6 +60,11 @@ public class Concurrent
     return new DoUntil (this.executor_, cond, task);
   }
 
+  public DoWhile doWhile (Conditional cond, Task task)
+  {
+    return new DoWhile (this.executor_, cond, task);
+  }
+
   public Forever forever (Task task)
   {
     return new Forever (this.executor_, task);

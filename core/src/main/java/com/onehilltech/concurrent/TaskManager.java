@@ -14,7 +14,7 @@ abstract class TaskManager <T extends Object>
 
   protected T result_;
 
-  private CompletionCallback completionCallback_;
+  protected CompletionCallback completionCallback_;
   protected Executor executor_;
 
   protected TaskManager (Executor executor, CompletionCallback completionCallback)
