@@ -55,6 +55,11 @@ public class Concurrent
 
   /// @{ Control Flow
 
+  public DoUntil doUntil (Conditional conditional, Task task)
+  {
+    return new DoUntil (this.executor_, conditional, task);
+  }
+
   public Forever forever (Task task)
   {
     return new Forever (this.executor_, task);
