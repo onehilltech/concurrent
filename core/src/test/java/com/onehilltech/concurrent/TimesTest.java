@@ -4,9 +4,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-public class WaterfallTest
+public class TimesTest
 {
   private boolean callbackCalled_;
 
@@ -19,44 +20,40 @@ public class WaterfallTest
   @Test
   public void testExecute () throws Exception
   {
-    final Waterfall waterfall = new Waterfall (
+    final Times times = new Times (
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public void run (Object unused, CompletionCallback callback)
           {
-            Assert.assertNull (lastResult);
-            System.err.println ("Running task one...");
-
-            callback.onComplete (1);
-          }
-        },
-        new Task () {
-          @Override
-          public void run (Object lastResult, CompletionCallback callback)
-          {
-            Assert.assertEquals (1, lastResult);
-            System.err.println ("Running task two...");
-
-            callback.onComplete (2);
+            Assert.assertNull (unused);
+            callback.onComplete ("DONE");
           }
         });
 
-    synchronized (waterfall)
+    final int loops = 4;
+
+    synchronized (times)
     {
-      Future future = waterfall.execute (new CompletionCallback ()
+      Future future = times.execute (loops, new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
         {
-          System.err.println ("Task completed...");
+          Assert.assertTrue ((result instanceof ArrayList));
 
-          Assert.assertEquals (2, result);
+          ArrayList <Object> a = (ArrayList<Object>)result;
+
+          Assert.assertEquals (loops, a.size ());
+
+          for (Object obj : a)
+            Assert.assertEquals (obj, "DONE");
+
           callbackCalled_ = true;
 
-          synchronized (waterfall)
+          synchronized (times)
           {
-            waterfall.notify ();
+            times.notify ();
           }
         }
 
@@ -74,7 +71,7 @@ public class WaterfallTest
       });
 
       if (!future.isDone ())
-        waterfall.wait (5000);
+        times.wait (5000);
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -83,26 +80,19 @@ public class WaterfallTest
   @Test
   public void testExecuteFail () throws Exception
   {
-    final Waterfall waterfall = new Waterfall (
+    final Times times = new Times (
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
-          {
-            callback.onComplete (1);
-          }
-        },
-        new Task () {
-          @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public void run (Object unused, CompletionCallback callback)
           {
             callback.onFail (new Exception ("IDK"));
           }
         });
 
-    synchronized (waterfall)
+    synchronized (times)
     {
-      Future future = waterfall.execute (new CompletionCallback ()
+      Future future = times.execute (7, new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -116,9 +106,9 @@ public class WaterfallTest
           Assert.assertEquals (e.getMessage (), "IDK");
           callbackCalled_ = true;
 
-          synchronized (waterfall)
+          synchronized (times)
           {
-            waterfall.notify ();
+            times.notify ();
           }
         }
 
@@ -130,7 +120,7 @@ public class WaterfallTest
       });
 
       if (!future.isDone ())
-        waterfall.wait (5000);
+        times.wait (5000);
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -139,11 +129,11 @@ public class WaterfallTest
   @Test
   public void testExecuteCancel () throws Exception
   {
-    final Waterfall waterfall = new Waterfall (
+    final Times times = new Times (
         Executors.newCachedThreadPool (),
         new Task () {
           @Override
-          public void run (Object lastResult, CompletionCallback callback)
+          public void run (Object unused, CompletionCallback callback)
           {
             try
             {
@@ -155,18 +145,11 @@ public class WaterfallTest
               throw new RuntimeException (e);
             }
           }
-        },
-        new Task () {
-          @Override
-          public void run (Object lastResult, CompletionCallback callback)
-          {
-            callback.onComplete (lastResult);
-          }
         });
 
-    synchronized (waterfall)
+    synchronized (times)
     {
-      Future future = waterfall.execute (new CompletionCallback ()
+      Future future = times.execute (7, new CompletionCallback ()
       {
         @Override
         public void onComplete (Object result)
@@ -185,18 +168,16 @@ public class WaterfallTest
         {
           callbackCalled_ = true;
 
-          synchronized (waterfall)
+          synchronized (times)
           {
-            waterfall.notify ();
+            times.notify ();
           }
         }
       });
 
-      // Cancel the waterfall, and wait until notification.
       future.cancel ();
-      waterfall.wait (5000);
+      times.wait (5000);
 
-      // Make sure the cancel callback is called.
       Assert.assertEquals (true, this.callbackCalled_);
     }
   }
