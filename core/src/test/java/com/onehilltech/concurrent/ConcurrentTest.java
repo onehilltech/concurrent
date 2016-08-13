@@ -16,6 +16,15 @@ public class ConcurrentTest
     }
   };
 
+  private final Conditional conditional_ = new Conditional ()
+  {
+    @Override
+    public boolean evaluate ()
+    {
+      return false;
+    }
+  };
+
   @Test
   public void testConstructor ()
   {
@@ -32,6 +41,8 @@ public class ConcurrentTest
     Assert.assertEquals (Retry.class, Concurrent.getInstance ().retry (this.singleTask_).getClass ());
     Assert.assertEquals (Series.class, Concurrent.getInstance ().series (this.singleTask_).getClass ());
     Assert.assertEquals (Times.class, Concurrent.getInstance ().times (this.singleTask_).getClass ());
+    Assert.assertEquals (Until.class, Concurrent.getInstance ().until (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (Waterfall.class, Concurrent.getInstance ().waterfall (this.singleTask_).getClass ());
 
     // Collections
     Assert.assertEquals (ForEach.class, Concurrent.getInstance ().forEach (this.singleTask_).getClass ());
