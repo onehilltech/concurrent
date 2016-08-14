@@ -124,5 +124,10 @@ public class Concurrent
     return new ForEach<> (this.executor_, task);
   }
 
+  public <T> Some <T> some (Task <T> task)
+  {
+    return new Some <> (this.executor_, task);
+  }
+
   /// @}
 }

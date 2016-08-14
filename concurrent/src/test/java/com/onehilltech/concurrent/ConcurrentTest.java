@@ -59,5 +59,6 @@ public class ConcurrentTest
 
     // Collections
     Assert.assertEquals (ForEach.class, Concurrent.getDefault ().forEach (this.singleTask_).getClass ());
+    Assert.assertEquals (Some.class, Concurrent.getDefault ().some (this.singleTask_).getClass ());
   }
 }
