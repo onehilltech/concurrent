@@ -47,7 +47,6 @@ public class Series
   {
     private int current_ = 0;
     private Task [] tasks_;
-    private Task currentTask_;
 
     private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
     {
@@ -67,15 +66,15 @@ public class Series
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.currentTask_ = this.tasks_[this.current_];
-      this.currentTask_.run (null, this);
+      Task task = this.tasks_[this.current_];
+      task.run (null, new TaskCompletionCallback (task));
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       // Store the result either under the name of the task, or the index of the task.
-      String taskName = this.currentTask_.getName ();
+      String taskName = task.getName ();
 
       if (taskName == null)
         taskName = Integer.toString (this.current_);

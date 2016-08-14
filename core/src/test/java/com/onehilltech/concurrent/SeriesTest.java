@@ -29,7 +29,7 @@ public class SeriesTest
             Assert.assertNull (unused);
             System.err.println ("Running task one...");
 
-            callback.onComplete ("0");
+            callback.done ("0");
           }
         },
         new Task () {
@@ -39,7 +39,7 @@ public class SeriesTest
             Assert.assertNull (unused);
             System.err.println ("Running task two...");
 
-            callback.onComplete ("1");
+            callback.done ("1");
           }
         });
 
@@ -101,7 +101,7 @@ public class SeriesTest
           @Override
           public void run (Object lastResult, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -153,7 +153,7 @@ public class SeriesTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {

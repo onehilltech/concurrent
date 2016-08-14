@@ -27,7 +27,7 @@ public class TimesTest
           public void run (Object unused, CompletionCallback callback)
           {
             Assert.assertNull (unused);
-            callback.onComplete ("DONE");
+            callback.done ("DONE");
           }
         });
 
@@ -86,7 +86,7 @@ public class TimesTest
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -138,7 +138,7 @@ public class TimesTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {

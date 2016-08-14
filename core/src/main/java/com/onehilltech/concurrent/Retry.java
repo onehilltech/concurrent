@@ -95,27 +95,23 @@ public class Retry
       return this.isDone_;
     }
 
-    /**
-     * Get the number of retries remaining.
-     *
-     * @return
-     */
-    public int getRemainingCount ()
-    {
-      return this.retries_;
-    }
-
     @Override
     public void onRun ()
     {
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.task_.run (null, this);
+      this.task_.run (null, new TaskCompletionCallback (task_) {
+        @Override
+        protected void onFail (Throwable e)
+        {
+          onTaskFail (this.task_, e);
+        }
+      });
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       this.result_ = result;
       this.isDone_ = true;
@@ -123,8 +119,13 @@ public class Retry
       this.executor_.execute (this);
     }
 
-    @Override
-    public void onFail (Throwable e)
+    /**
+     * Handle the failure of a task.
+     *
+     * @param task
+     * @param e
+     */
+    public void onTaskFail (Task task, Throwable e)
     {
       if (this.retries_ > 0)
       {
@@ -147,7 +148,7 @@ public class Retry
       }
       else
       {
-        super.onFail (e);
+        fail (e);
       }
     }
   }

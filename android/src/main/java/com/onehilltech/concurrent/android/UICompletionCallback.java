@@ -10,7 +10,7 @@ import com.onehilltech.concurrent.CompletionCallback;
  * Specialization of the CompletionCallback that executes its callback methods
  * on the UI thread.
  */
-public abstract class UICompletionCallback implements CompletionCallback
+public abstract class UICompletionCallback extends CompletionCallback
 {
   private static final int RESULT_COMPLETE = 0;
   private static final int RESULT_CANCEL = 1;

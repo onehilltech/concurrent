@@ -26,7 +26,7 @@ public class ForeverTest
           public void run (Object unused, CompletionCallback callback)
           {
             Assert.assertNull (unused);
-            callback.onComplete ("DONE");
+            callback.done ("DONE");
           }
         });
 
@@ -59,7 +59,7 @@ public class ForeverTest
       });
 
       if (!future.isDone ())
-        forever.wait (3000);
+        forever.wait (1000);
 
       Assert.assertFalse (this.callbackCalled_);
     }
@@ -74,7 +74,7 @@ public class ForeverTest
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 

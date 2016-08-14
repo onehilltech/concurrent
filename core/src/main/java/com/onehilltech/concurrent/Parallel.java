@@ -46,6 +46,7 @@ public class Parallel
   private class TaskManagerImpl extends TaskManager <HashMap <String, Object>>
   {
     private Task [] tasks_;
+    private final Object completeLock_ = new Object ();
 
     private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
     {
@@ -67,12 +68,7 @@ public class Parallel
     }
 
     @Override
-    public void onComplete (Object result)
-    {
-      throw new UnsupportedOperationException ();
-    }
-
-    private synchronized void onTaskComplete (Task task, Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       // Get the name of task, or compute one based on how many tasks have
       // already finished.
@@ -81,17 +77,20 @@ public class Parallel
       if (taskName == null)
         taskName = Integer.toString (this.result_.size ());
 
-      this.result_.put (taskName, result);
+      synchronized (this.completeLock_)
+      {
+        this.result_.put (taskName, result);
+      }
 
       if (this.isDone ())
         this.done ();
     }
 
-    class ParallelTask implements Runnable, CompletionCallback
+    private class ParallelTask implements Runnable
     {
       private final Task task_;
 
-      ParallelTask (Task task)
+      public ParallelTask (Task task)
       {
         this.task_ = task;
       }
@@ -102,30 +101,12 @@ public class Parallel
         try
         {
           if (canContinue ())
-            this.task_.run (null, this);
+            this.task_.run (null, new TaskCompletionCallback (this.task_));
         }
         catch (Exception e)
         {
           fail (e);
         }
-      }
-
-      @Override
-      public void onCancel ()
-      {
-        TaskManagerImpl.this.onCancel ();
-      }
-
-      @Override
-      public void onFail (Throwable e)
-      {
-        TaskManagerImpl.this.onFail (e);
-      }
-
-      @Override
-      public void onComplete (Object result)
-      {
-        onTaskComplete (this.task_, result);
       }
     }
   }

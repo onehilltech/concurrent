@@ -28,7 +28,7 @@ public class WaterfallTest
             Assert.assertNull (lastResult);
             System.err.println ("Running task one...");
 
-            callback.onComplete (1);
+            callback.done (1);
           }
         },
         new Task () {
@@ -38,7 +38,7 @@ public class WaterfallTest
             Assert.assertEquals (1, lastResult);
             System.err.println ("Running task two...");
 
-            callback.onComplete (2);
+            callback.done (2);
           }
         });
 
@@ -89,14 +89,14 @@ public class WaterfallTest
           @Override
           public void run (Object lastResult, CompletionCallback callback)
           {
-            callback.onComplete (1);
+            callback.done (1);
           }
         },
         new Task () {
           @Override
           public void run (Object lastResult, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -148,7 +148,7 @@ public class WaterfallTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {
@@ -160,7 +160,7 @@ public class WaterfallTest
           @Override
           public void run (Object lastResult, CompletionCallback callback)
           {
-            callback.onComplete (lastResult);
+            callback.done (lastResult);
           }
         });
 

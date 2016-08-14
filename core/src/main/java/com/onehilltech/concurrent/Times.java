@@ -67,11 +67,11 @@ public class Times
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.task_.run (null, this);
+      this.task_.run (null, new TaskCompletionCallback (this.task_));
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       // Push the result onto the result set, then run the executor again.
       this.result_.add (result);

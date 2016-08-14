@@ -1,7 +1,6 @@
 package com.onehilltech.concurrent;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,7 +41,6 @@ public class ForEach <T>
   }
 
   private class TaskManagerImpl extends TaskManager
-    implements CompletionCallback
   {
     private Task<T> task_;
     private Collection<T> coll_;
@@ -82,7 +80,7 @@ public class ForEach <T>
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       int remainingCount = this.remainingCount_.decrementAndGet ();
 
@@ -108,7 +106,7 @@ public class ForEach <T>
         try
         {
           if (canContinue ())
-            task_.run (this.item_, TaskManagerImpl.this);
+            task_.run (this.item_, new TaskCompletionCallback (task_));
         }
         catch (Exception e)
         {

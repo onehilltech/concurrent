@@ -40,7 +40,7 @@ public class UntilTest
             // Decrement the remaining.
             -- remaining_;
 
-            callback.onComplete ("DONE");
+            callback.done ("DONE");
           }
         });
 
@@ -99,7 +99,7 @@ public class UntilTest
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -159,7 +159,7 @@ public class UntilTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {

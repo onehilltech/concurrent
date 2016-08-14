@@ -7,7 +7,7 @@ package com.onehilltech.concurrent;
  *
  * The proxy also has the option of passing control to the original object.
  */
-public class CompletionCallbackProxy implements CompletionCallback
+public class CompletionCallbackProxy extends CompletionCallback
 {
   private final CompletionCallback callback_;
 

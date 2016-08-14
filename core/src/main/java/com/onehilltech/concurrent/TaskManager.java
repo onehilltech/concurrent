@@ -3,7 +3,7 @@ package com.onehilltech.concurrent;
 import java.util.concurrent.Executor;
 
 abstract class TaskManager <T extends Object>
-    implements Runnable, CompletionCallback
+    implements Runnable
 {
   private boolean isCancelled_ = false;
   private Throwable failure_;
@@ -16,6 +16,34 @@ abstract class TaskManager <T extends Object>
 
   protected CompletionCallback completionCallback_;
   protected Executor executor_;
+
+  protected class TaskCompletionCallback extends CompletionCallback
+  {
+    protected final Task task_;
+
+    public TaskCompletionCallback (Task task)
+    {
+      this.task_ = task;
+    }
+
+    @Override
+    protected void onCancel ()
+    {
+      TaskManager.this.cancel ();
+    }
+
+    @Override
+    protected void onFail (Throwable e)
+    {
+      TaskManager.this.fail (e);
+    }
+
+    @Override
+    protected void onComplete (Object result)
+    {
+      onTaskComplete (this.task_, result);
+    }
+  }
 
   protected TaskManager (Executor executor, CompletionCallback completionCallback)
   {
@@ -31,17 +59,7 @@ abstract class TaskManager <T extends Object>
     this.isCancelled_ = true;
   }
 
-  @Override
-  public void onFail (Throwable e)
-  {
-    this.fail (e);
-  }
-
-  @Override
-  public void onCancel ()
-  {
-    // Do nothing...
-  }
+  protected abstract void onTaskComplete (Task task, Object result);
 
   @Override
   public final void run ()

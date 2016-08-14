@@ -26,7 +26,7 @@ public class RetryTest
           public void run (Object unused, CompletionCallback callback)
           {
             Assert.assertNull (unused);
-            callback.onComplete ("DONE");
+            callback.done ("DONE");
           }
         });
 
@@ -78,7 +78,7 @@ public class RetryTest
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -130,7 +130,7 @@ public class RetryTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {

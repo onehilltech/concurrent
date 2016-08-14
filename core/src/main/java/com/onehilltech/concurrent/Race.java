@@ -1,6 +1,8 @@
 package com.onehilltech.concurrent;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class Race
@@ -45,13 +47,13 @@ public class Race
    */
   private class TaskManagerImpl extends TaskManager <HashMap <String, Object>>
   {
-    private Task [] tasks_;
+    private List<Task> tasks_;
     private Task firstTaskToComplete_;
 
     private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
     {
       super (executor, callback);
-      this.tasks_ = tasks;
+      this.tasks_ = Arrays.asList (tasks);
       this.result_ = new HashMap< > ();
     }
 
@@ -67,20 +69,12 @@ public class Race
       // only accept the first one to finish. Hopefully, there are enough
       // threads to run all tasks simultaneously. If there is not enough
       // threads, then it is not our concern.
-
-      int index = 0;
-
       for (Task task : this.tasks_)
-        this.executor_.execute (new RaceTask (task, index ++));
+        this.executor_.execute (new RaceTask (task));
     }
 
     @Override
-    public void onComplete (Object result)
-    {
-      throw new UnsupportedOperationException ();
-    }
-
-    private synchronized void onTaskComplete (Task task, int index, Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       // We only accept the first task to complete.
       if (this.firstTaskToComplete_ != null)
@@ -93,7 +87,14 @@ public class Race
       String taskName = task.getName ();
 
       if (taskName == null)
+      {
+        int index = this.tasks_.indexOf (task);
+
+        if (index == -1)
+          throw new IllegalArgumentException ("Invalid task");
+
         taskName = Integer.toString (index);
+      }
 
       this.result_.put (taskName, result);
 
@@ -101,15 +102,15 @@ public class Race
       this.done ();
     }
 
-    class RaceTask implements Runnable, CompletionCallback
+
+
+    class RaceTask implements Runnable
     {
       private final Task task_;
-      private final int index_;
 
-      RaceTask (Task task, int index)
+      RaceTask (Task task)
       {
         this.task_ = task;
-        this.index_ = index;
       }
 
       @Override
@@ -118,30 +119,12 @@ public class Race
         try
         {
           if (canContinue ())
-            this.task_.run (null, this);
+            this.task_.run (null, new TaskCompletionCallback (this.task_));
         }
         catch (Exception e)
         {
           fail (e);
         }
-      }
-
-      @Override
-      public void onCancel ()
-      {
-        Race.TaskManagerImpl.this.onCancel ();
-      }
-
-      @Override
-      public void onFail (Throwable e)
-      {
-        Race.TaskManagerImpl.this.onFail (e);
-      }
-
-      @Override
-      public void onComplete (Object result)
-      {
-        onTaskComplete (this.task_, this.index_, result);
       }
     }
   }

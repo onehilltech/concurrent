@@ -40,7 +40,7 @@ public class DoUntilTest
             // Decrement the remaining.
             current_ ++;
 
-            callback.onComplete ("DONE");
+            callback.done ("DONE");
           }
         });
 
@@ -92,6 +92,7 @@ public class DoUntilTest
           @Override
           public boolean evaluate ()
           {
+            // We want to keep looping forever...
             return false;
           }
         },
@@ -99,7 +100,8 @@ public class DoUntilTest
           @Override
           public void run (Object unused, CompletionCallback callback)
           {
-            callback.onFail (new Exception ("IDK"));
+            Assert.assertNull (unused);
+            callback.fail (new Exception ("IDK"));
           }
         });
 
@@ -133,7 +135,7 @@ public class DoUntilTest
       });
 
       if (!future.isDone ())
-        doUntil.wait (5000);
+        doUntil.wait ();
 
       Assert.assertEquals (true, this.callbackCalled_);
     }
@@ -159,7 +161,7 @@ public class DoUntilTest
             try
             {
               Thread.sleep (1000);
-              callback.onComplete (null);
+              callback.done (null);
             }
             catch (InterruptedException e)
             {

@@ -81,11 +81,11 @@ public class Until
     public void onRun ()
     {
       // Run the task since the condition is still true.
-      this.task_.run (null, this);
+      this.task_.run (null, new TaskCompletionCallback (this.task_));
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       this.result_ = result;
       this.executor_.execute (this);

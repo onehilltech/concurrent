@@ -78,11 +78,11 @@ public class Waterfall
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
       Task task = this.tasks_[this.currentTask_];
-      task.run (this.result_, this);
+      task.run (this.result_, new TaskCompletionCallback (task));
     }
 
     @Override
-    public void onComplete (Object result)
+    public void onTaskComplete (Task task, Object result)
     {
       // Store the result of the task as the last result.
       this.result_ = result;
