@@ -41,8 +41,8 @@ android {
 dependencies {
     compile project(':core')
 
-    //androidTestCompile 'junit:junit:4.11'
-    //androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
-    //    exclude group: 'junit'
-    //}
+    androidTestCompile 'junit:junit:4.11'
+    androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
+        exclude group: 'junit'
+    }
 }
