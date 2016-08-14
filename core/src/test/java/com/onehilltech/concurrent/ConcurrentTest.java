@@ -28,26 +28,26 @@ public class ConcurrentTest
   @Test
   public void testConstructor ()
   {
-    Assert.assertEquals (ThreadPoolExecutor.class, Concurrent.getInstance ().getExecutor ().getClass ());
+    Assert.assertEquals (ThreadPoolExecutor.class, Concurrent.getDefault ().getExecutor ().getClass ());
   }
 
   @Test
   public void testFactoryMethods ()
   {
     // Control Flow
-    Assert.assertEquals (DoUntil.class, Concurrent.getInstance ().doUntil (this.conditional_, this.singleTask_).getClass ());
-    Assert.assertEquals (DoWhile.class, Concurrent.getInstance ().doWhile (this.conditional_, this.singleTask_).getClass ());
-    Assert.assertEquals (Forever.class, Concurrent.getInstance ().forever (this.singleTask_).getClass ());
-    Assert.assertEquals (Parallel.class, Concurrent.getInstance ().parallel (this.singleTask_).getClass ());
-    Assert.assertEquals (Race.class, Concurrent.getInstance ().race (this.singleTask_).getClass ());
-    Assert.assertEquals (Retry.class, Concurrent.getInstance ().retry (this.singleTask_).getClass ());
-    Assert.assertEquals (Series.class, Concurrent.getInstance ().series (this.singleTask_).getClass ());
-    Assert.assertEquals (Times.class, Concurrent.getInstance ().times (this.singleTask_).getClass ());
-    Assert.assertEquals (Until.class, Concurrent.getInstance ().until (this.conditional_, this.singleTask_).getClass ());
-    Assert.assertEquals (Waterfall.class, Concurrent.getInstance ().waterfall (this.singleTask_).getClass ());
-    Assert.assertEquals (While.class, Concurrent.getInstance ().whilst (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (DoUntil.class, Concurrent.getDefault ().doUntil (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (DoWhile.class, Concurrent.getDefault ().doWhile (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (Forever.class, Concurrent.getDefault ().forever (this.singleTask_).getClass ());
+    Assert.assertEquals (Parallel.class, Concurrent.getDefault ().parallel (this.singleTask_).getClass ());
+    Assert.assertEquals (Race.class, Concurrent.getDefault ().race (this.singleTask_).getClass ());
+    Assert.assertEquals (Retry.class, Concurrent.getDefault ().retry (this.singleTask_).getClass ());
+    Assert.assertEquals (Series.class, Concurrent.getDefault ().series (this.singleTask_).getClass ());
+    Assert.assertEquals (Times.class, Concurrent.getDefault ().times (this.singleTask_).getClass ());
+    Assert.assertEquals (Until.class, Concurrent.getDefault ().until (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (Waterfall.class, Concurrent.getDefault ().waterfall (this.singleTask_).getClass ());
+    Assert.assertEquals (While.class, Concurrent.getDefault ().whilst (this.conditional_, this.singleTask_).getClass ());
 
     // Collections
-    Assert.assertEquals (ForEach.class, Concurrent.getInstance ().forEach (this.singleTask_).getClass ());
+    Assert.assertEquals (ForEach.class, Concurrent.getDefault ().forEach (this.singleTask_).getClass ());
   }
 }

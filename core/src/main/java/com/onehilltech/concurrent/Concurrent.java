@@ -9,20 +9,20 @@ public class Concurrent
   private Executor executor_;
 
   /// Singleton instance.
-  private static Concurrent instance_;
+  private static Concurrent default_;
 
   /**
    * Get the default instance of the Concurrent.
    *
    * @return
    */
-  public static Concurrent getInstance ()
+  public static Concurrent getDefault ()
   {
-    if (instance_ != null)
-      return instance_;
+    if (default_ != null)
+      return default_;
 
-    instance_ = new Concurrent ();
-    return instance_;
+    default_ = new Concurrent ();
+    return default_;
   }
 
   /**
