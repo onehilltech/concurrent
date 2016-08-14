@@ -119,6 +119,11 @@ public class Concurrent
 
   /// @{ Collections
 
+  public <T> Every <T> every (Task <T> task)
+  {
+    return new Every<> (this.executor_, task);
+  }
+
   public <T> ForEach <T> forEach (Task <T> task)
   {
     return new ForEach<> (this.executor_, task);

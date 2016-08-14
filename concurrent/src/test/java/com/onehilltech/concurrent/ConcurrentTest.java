@@ -58,6 +58,7 @@ public class ConcurrentTest
     Assert.assertEquals (While.class, Concurrent.getDefault ().whilst (this.conditional_, this.singleTask_).getClass ());
 
     // Collections
+    Assert.assertEquals (Every.class, Concurrent.getDefault ().every (this.singleTask_).getClass ());
     Assert.assertEquals (ForEach.class, Concurrent.getDefault ().forEach (this.singleTask_).getClass ());
     Assert.assertEquals (Some.class, Concurrent.getDefault ().some (this.singleTask_).getClass ());
   }
