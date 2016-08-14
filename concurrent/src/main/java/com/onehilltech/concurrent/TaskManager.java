@@ -51,7 +51,7 @@ abstract class TaskManager <T extends Object>
     this.completionCallback_ = completionCallback;
   }
 
-  public final void cancel ()
+  public void cancel ()
   {
     if (this.isCancelled_)
       return;
@@ -59,10 +59,16 @@ abstract class TaskManager <T extends Object>
     this.isCancelled_ = true;
   }
 
+  /**
+   * Handle completion of a task.
+   *
+   * @param task
+   * @param result
+   */
   protected abstract void onTaskComplete (Task task, Object result);
 
   @Override
-  public final void run ()
+  public void run ()
   {
     if (this.failure_ != null)
     {

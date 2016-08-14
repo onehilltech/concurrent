@@ -25,6 +25,15 @@ public class ConcurrentTest
     }
   };
 
+  private final ConditionalTask conditionalTask_ = new ConditionalTask ()
+  {
+    @Override
+    public void evaluate (ConditionalCallback callback)
+    {
+
+    }
+  };
+
   @Test
   public void testConstructor ()
   {
@@ -37,6 +46,7 @@ public class ConcurrentTest
     // Control Flow
     Assert.assertEquals (DoUntil.class, Concurrent.getDefault ().doUntil (this.conditional_, this.singleTask_).getClass ());
     Assert.assertEquals (DoWhile.class, Concurrent.getDefault ().doWhile (this.conditional_, this.singleTask_).getClass ());
+    Assert.assertEquals (During.class, Concurrent.getDefault ().during (this.conditionalTask_, this.singleTask_).getClass ());
     Assert.assertEquals (Forever.class, Concurrent.getDefault ().forever (this.singleTask_).getClass ());
     Assert.assertEquals (Parallel.class, Concurrent.getDefault ().parallel (this.singleTask_).getClass ());
     Assert.assertEquals (Race.class, Concurrent.getDefault ().race (this.singleTask_).getClass ());

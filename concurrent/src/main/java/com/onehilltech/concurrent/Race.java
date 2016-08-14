@@ -102,8 +102,6 @@ public class Race
       this.done ();
     }
 
-
-
     class RaceTask implements Runnable
     {
       private final Task task_;

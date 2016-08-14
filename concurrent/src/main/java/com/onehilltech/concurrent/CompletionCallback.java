@@ -1,8 +1,8 @@
 package com.onehilltech.concurrent;
 
-public abstract class CompletionCallback
+public abstract class CompletionCallback <T>
 {
-  public final void done (Object result)
+  public final void done (T result)
   {
     this.onComplete (result);
   }
@@ -14,5 +14,5 @@ public abstract class CompletionCallback
 
   protected abstract void onFail (Throwable e);
   protected abstract void onCancel ();
-  protected abstract void onComplete (Object result);
+  protected abstract void onComplete (T result);
 }
