@@ -39,7 +39,7 @@ android {
 }
 
 dependencies {
-    compile project(':core')
+    compile project(':concurrent')
 
     androidTestCompile 'junit:junit:4.11'
     androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
