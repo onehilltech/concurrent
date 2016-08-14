@@ -53,7 +53,7 @@ public class Times
       super (executor, callback);
       this.task_ = task;
       this.times_ = times;
-      this.result_ = new ArrayList<> ();
+      this.result_ = new ArrayList<> (times);
     }
 
     public boolean isDone ()
@@ -67,7 +67,7 @@ public class Times
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.task_.run (null, new TaskCompletionCallback (this.task_));
+      this.task_.run (this.result_.size (), new TaskCompletionCallback (this.task_));
     }
 
     @Override

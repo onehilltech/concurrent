@@ -23,10 +23,12 @@ public class TimesTest
     final Times times = new Times (
         Executors.newCachedThreadPool (),
         new Task () {
+          int count_ = 0;
+
           @Override
-          public void run (Object unused, CompletionCallback callback)
+          public void run (Object index, CompletionCallback callback)
           {
-            Assert.assertNull (unused);
+            Assert.assertEquals (count_ ++, index);
             callback.done ("DONE");
           }
         });
