@@ -21,6 +21,9 @@ public class DoWhileTest
   @Test
   public void testExecute () throws Exception
   {
+    // This test should only loop once because we are already at our stopping
+    // condition. DoWhile will always run the task once before checking the
+    // condition (i.e., a post-check).
     final DoWhile doWhile = new DoWhile (
         Executors.newCachedThreadPool (),
         new Conditional ()
