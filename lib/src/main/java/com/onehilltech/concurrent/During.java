@@ -83,9 +83,9 @@ public class During
       }
 
       @Override
-      protected void onComplete (Boolean result)
+      protected void onComplete (Object result)
       {
-        onConditionComplete (result);
+        onConditionComplete ((boolean)result);
       }
     };
 
