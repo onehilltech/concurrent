@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class RaceTest
@@ -55,17 +56,12 @@ public class RaceTest
 
     synchronized (race)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback <NamedResult <Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (NamedResult<Object> result)
         {
-          Assert.assertEquals (HashMap.class, result.getClass ());
-
-          HashMap <String, Object> map = (HashMap<String, Object>)result;
-
-          Assert.assertEquals (1, map.size ());
-
+          Assert.assertNotNull (result);
           callbackCalled_ = true;
 
           synchronized (race)
@@ -116,10 +112,10 @@ public class RaceTest
 
     synchronized (race)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback <NamedResult <Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (NamedResult <Object> result)
         {
           Assert.fail ();
         }
@@ -180,10 +176,10 @@ public class RaceTest
 
     synchronized (race)
     {
-      Future future = race.execute (new CompletionCallback ()
+      Future future = race.execute (new CompletionCallback <NamedResult <Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (NamedResult <Object> result)
         {
           Assert.fail ();
         }

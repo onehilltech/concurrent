@@ -46,7 +46,7 @@ public class UntilTest
 
     synchronized (until)
     {
-      Future future = until.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -105,7 +105,7 @@ public class UntilTest
 
     synchronized (until)
     {
-      Future future = until.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -170,7 +170,7 @@ public class UntilTest
 
     synchronized (until)
     {
-      Future future = until.execute (new CompletionCallback ()
+      Future future = until.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)

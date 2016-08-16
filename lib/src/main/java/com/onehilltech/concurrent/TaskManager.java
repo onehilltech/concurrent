@@ -2,7 +2,7 @@ package com.onehilltech.concurrent;
 
 import java.util.concurrent.Executor;
 
-abstract class TaskManager <T extends Object>
+abstract class TaskManager <T>
     implements Runnable
 {
   private boolean isCancelled_ = false;
@@ -14,10 +14,15 @@ abstract class TaskManager <T extends Object>
 
   protected T result_;
 
-  protected CompletionCallback completionCallback_;
+  protected CompletionCallback <T> completionCallback_;
   protected Executor executor_;
 
-  protected class TaskCompletionCallback extends CompletionCallback
+  /**
+   * CompletionCallback used by the individual Task objects.
+   *
+   * @param <R>
+   */
+  protected abstract class TaskCompletionCallback <R> extends CompletionCallback <R>
   {
     protected final Task task_;
 
@@ -39,13 +44,10 @@ abstract class TaskManager <T extends Object>
     }
 
     @Override
-    protected void onComplete (Object result)
-    {
-      onTaskComplete (this.task_, result);
-    }
+    protected abstract void onComplete (R result);
   }
 
-  protected TaskManager (Executor executor, CompletionCallback completionCallback)
+  protected TaskManager (Executor executor, CompletionCallback <T> completionCallback)
   {
     this.executor_ = executor;
     this.completionCallback_ = completionCallback;
@@ -58,14 +60,6 @@ abstract class TaskManager <T extends Object>
 
     this.isCancelled_ = true;
   }
-
-  /**
-   * Handle completion of a task.
-   *
-   * @param task
-   * @param result
-   */
-  protected abstract void onTaskComplete (Task task, Object result);
 
   @Override
   public void run ()
@@ -145,5 +139,10 @@ abstract class TaskManager <T extends Object>
   protected synchronized boolean canContinue ()
   {
     return this.failure_ == null && !this.isCancelled_;
+  }
+
+  protected void rerunTaskManager ()
+  {
+    this.executor_.execute (this);
   }
 }

@@ -36,7 +36,7 @@ public class Retry
    * @param callback          Callback for the task
    * @return                  Future for managing tasks
    */
-  public Future execute (int retries, CompletionCallback callback)
+  public <T> Future execute (int retries, CompletionCallback <T> callback)
   {
     return this.execute (retries, 0, callback);
   }
@@ -49,13 +49,13 @@ public class Retry
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (int retries, int interval, CompletionCallback callback)
+  public <T> Future execute (int retries, int interval, CompletionCallback <T> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
 
-    TaskManagerImpl taskManager =
-        new TaskManagerImpl (
+    TaskManagerImpl <T> taskManager =
+        new TaskManagerImpl <> (
             this.executor_,
             this.task_,
             retries,
@@ -70,7 +70,7 @@ public class Retry
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl <T> extends TaskManager <T>
   {
     private int retries_;
     private final int interval_;
@@ -81,7 +81,7 @@ public class Retry
                              Task task,
                              int retries,
                              int interval,
-                             CompletionCallback callback)
+                             CompletionCallback <T> callback)
     {
       super (executor, callback);
       this.task_ = task;
@@ -101,31 +101,30 @@ public class Retry
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.task_.run (null, new TaskCompletionCallback (task_) {
+      this.task_.run (null, new TaskCompletionCallback <T> (this.task_) {
         @Override
         protected void onFail (Throwable e)
         {
-          onTaskFail (this.task_, e);
+          onTaskFail (e);
+        }
+
+        @Override
+        protected void onComplete (T result)
+        {
+          result_ = result;
+          isDone_ = true;
+
+          rerunTaskManager ();
         }
       });
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ = result;
-      this.isDone_ = true;
-
-      this.executor_.execute (this);
     }
 
     /**
      * Handle the failure of a task.
      *
-     * @param task
      * @param e
      */
-    public void onTaskFail (Task task, Throwable e)
+    public void onTaskFail (Throwable e)
     {
       if (this.retries_ > 0)
       {

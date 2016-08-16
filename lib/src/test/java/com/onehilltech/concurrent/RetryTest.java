@@ -34,10 +34,10 @@ public class RetryTest
 
     synchronized (retry)
     {
-      Future future = retry.execute (retries, new CompletionCallback ()
+      Future future = retry.execute (retries, new CompletionCallback <String> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (String result)
         {
           Assert.assertEquals ("DONE", result);
           callbackCalled_ = true;
@@ -84,10 +84,10 @@ public class RetryTest
 
     synchronized (retry)
     {
-      Future future = retry.execute (7, new CompletionCallback ()
+      Future future = retry.execute (7, new CompletionCallback <String> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (String result)
         {
           Assert.fail ();
         }
@@ -141,10 +141,10 @@ public class RetryTest
 
     synchronized (retry)
     {
-      Future future = retry.execute (7, new CompletionCallback ()
+      Future future = retry.execute (7, new CompletionCallback <String> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (String result)
         {
           Assert.fail ();
         }

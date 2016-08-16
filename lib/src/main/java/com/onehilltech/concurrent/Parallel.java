@@ -1,6 +1,7 @@
 package com.onehilltech.concurrent;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class Parallel
@@ -29,7 +30,7 @@ public class Parallel
    * @param callback          Callback for the task
    * @return                  Future for managing tasks
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Map<String, Object>> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -43,12 +44,14 @@ public class Parallel
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager <HashMap <String, Object>>
+  private class TaskManagerImpl extends TaskManager <Map<String, Object>>
   {
     private Task [] tasks_;
     private final Object completeLock_ = new Object ();
 
-    private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
+    private TaskManagerImpl (Executor executor,
+                             Task [] tasks,
+                             CompletionCallback <Map<String, Object>> callback)
     {
       super (executor, callback);
       this.tasks_ = tasks;
@@ -67,7 +70,6 @@ public class Parallel
         this.executor_.execute (new ParallelTask (task));
     }
 
-    @Override
     public void onTaskComplete (Task task, Object result)
     {
       // Get the name of task, or compute one based on how many tasks have
@@ -90,7 +92,7 @@ public class Parallel
     {
       private final Task task_;
 
-      public ParallelTask (Task task)
+      ParallelTask (Task task)
       {
         this.task_ = task;
       }
@@ -101,7 +103,16 @@ public class Parallel
         try
         {
           if (canContinue ())
-            this.task_.run (null, new TaskCompletionCallback (this.task_));
+          {
+            this.task_.run (null, new TaskCompletionCallback<Object> (this.task_)
+            {
+              @Override
+              protected void onComplete (Object result)
+              {
+                onTaskComplete (this.task_, result);
+              }
+            });
+          }
         }
         catch (Exception e)
         {

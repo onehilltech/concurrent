@@ -79,15 +79,6 @@ public class ForEach <T>
         this.executor_.execute (new ItemTask (item));
     }
 
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      int remainingCount = this.remainingCount_.decrementAndGet ();
-
-      if (0 == remainingCount)
-        this.done ();
-    }
-
     /**
      * Run the item on its own thread.
      */
@@ -106,7 +97,18 @@ public class ForEach <T>
         try
         {
           if (canContinue ())
-            task_.run (this.item_, new TaskCompletionCallback (task_));
+          {
+            task_.run (this.item_, new TaskCompletionCallback (task_) {
+              @Override
+              protected void onComplete (Object result)
+              {
+                int remainingCount = remainingCount_.decrementAndGet ();
+
+                if (0 == remainingCount)
+                  TaskManagerImpl.this.done ();
+              }
+            });
+          }
         }
         catch (Exception e)
         {

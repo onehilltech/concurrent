@@ -29,7 +29,7 @@ public class Every <T>
    * @param callback Callback for the task
    * @return
    */
-  public Future execute (Collection <T> coll, CompletionCallback callback)
+  public Future execute (Collection <T> coll, CompletionCallback <Boolean> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -48,7 +48,7 @@ public class Every <T>
     private TaskManagerImpl (Executor executor,
                              Task<T> task,
                              Collection <T> coll,
-                             CompletionCallback callback)
+                             CompletionCallback <Boolean> callback)
     {
       super (executor, callback);
 
@@ -67,14 +67,14 @@ public class Every <T>
     public void onRun ()
     {
       T item = this.iter_.next ();
-      this.task_.run (item, new TaskCompletionCallback (this.task_));
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ &= (Boolean)result;
-      this.executor_.execute (this);
+      this.task_.run (item, new TaskCompletionCallback <Boolean> (this.task_) {
+        @Override
+        protected void onComplete (Boolean result)
+        {
+          result_ &= result;
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }

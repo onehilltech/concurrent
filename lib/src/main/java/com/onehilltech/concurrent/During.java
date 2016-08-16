@@ -38,7 +38,7 @@ public class During
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Object> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -58,7 +58,7 @@ public class During
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl extends TaskManager <Object>
   {
     private final ConditionalTask condTask_;
     private final Task task_;
@@ -83,9 +83,9 @@ public class During
       }
 
       @Override
-      protected void onComplete (Object result)
+      protected void onComplete (Boolean result)
       {
-        onConditionComplete ((boolean)result);
+        onConditionComplete (result);
       }
     };
 
@@ -110,7 +110,14 @@ public class During
       @Override
       public void run ()
       {
-        task_.run (null, new TaskCompletionCallback (task_));
+        task_.run (null, new TaskCompletionCallback <Object> (task_) {
+          @Override
+          protected void onComplete (Object result)
+          {
+            result_ = result;
+            rerunTaskManager ();
+          }
+        });
       }
     }
 
@@ -135,13 +142,6 @@ public class During
     public void onRun ()
     {
       this.condTask_.evaluate (this.conditionalCallback_);
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ = result;
-      this.executor_.execute (this);
     }
   }
 }

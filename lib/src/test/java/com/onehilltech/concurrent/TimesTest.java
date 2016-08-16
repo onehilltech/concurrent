@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class TimesTest
@@ -37,18 +38,14 @@ public class TimesTest
 
     synchronized (times)
     {
-      Future future = times.execute (loops, new CompletionCallback ()
+      Future future = times.execute (loops, new CompletionCallback <List<String>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (List <String> result)
         {
-          Assert.assertTrue ((result instanceof ArrayList));
+          Assert.assertEquals (loops, result.size ());
 
-          ArrayList <Object> a = (ArrayList<Object>)result;
-
-          Assert.assertEquals (loops, a.size ());
-
-          for (Object obj : a)
+          for (String obj : result)
             Assert.assertEquals (obj, "DONE");
 
           callbackCalled_ = true;
@@ -94,10 +91,10 @@ public class TimesTest
 
     synchronized (times)
     {
-      Future future = times.execute (7, new CompletionCallback ()
+      Future future = times.execute (7, new CompletionCallback <List <String>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (List <String> result)
         {
           Assert.fail ();
         }
@@ -151,10 +148,10 @@ public class TimesTest
 
     synchronized (times)
     {
-      Future future = times.execute (7, new CompletionCallback ()
+      Future future = times.execute (7, new CompletionCallback <List<String>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (List <String> result)
         {
           Assert.fail ();
         }

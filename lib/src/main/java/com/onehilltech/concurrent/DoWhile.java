@@ -38,7 +38,7 @@ public class DoWhile
    * @param callback Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Object> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -63,7 +63,7 @@ public class DoWhile
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl extends TaskManager <Object>
   {
     private final Conditional cond_;
 
@@ -90,14 +90,14 @@ public class DoWhile
     @Override
     public void onRun ()
     {
-      this.task_.run (null, new TaskCompletionCallback (this.task_));
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ = result;
-      this.executor_.execute (this);
+      this.task_.run (null, new TaskCompletionCallback <Object> (this.task_) {
+        @Override
+        protected void onComplete (Object result)
+        {
+          result_ = result;
+          rerunTaskManager ();
+        }
+      });
     }
 
     private class FirstIteration implements Iteration

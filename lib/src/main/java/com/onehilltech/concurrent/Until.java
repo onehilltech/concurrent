@@ -36,7 +36,7 @@ public class Until
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Object> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -56,7 +56,7 @@ public class Until
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl extends TaskManager <Object>
   {
     private final Conditional until_;
     private final Task task_;
@@ -64,7 +64,7 @@ public class Until
     private TaskManagerImpl (Executor executor,
                              Conditional until,
                              Task task,
-                             CompletionCallback callback)
+                             CompletionCallback <Object> callback)
     {
       super (executor, callback);
       this.until_ = until;
@@ -81,14 +81,14 @@ public class Until
     public void onRun ()
     {
       // Run the task since the condition is still true.
-      this.task_.run (null, new TaskCompletionCallback (this.task_));
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ = result;
-      this.executor_.execute (this);
+      this.task_.run (null, new TaskCompletionCallback <Object> (this.task_) {
+        @Override
+        protected void onComplete (Object result)
+        {
+          result_ = result;
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }

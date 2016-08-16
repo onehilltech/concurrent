@@ -31,7 +31,7 @@ public class EveryTest
                          {
                            callback.done (item == 3);
                          }
-                       }).execute (Arrays.asList (nums), new CompletionCallback ()
+                       }).execute (Arrays.asList (nums), new CompletionCallback <Boolean> ()
         {
           @Override
           public void onFail (Throwable e)
@@ -46,7 +46,7 @@ public class EveryTest
           }
 
           @Override
-          public void onComplete (Object result)
+          public void onComplete (Boolean result)
           {
             Assert.assertEquals (true, result);
             callbackCalled_ = true;
@@ -70,18 +70,18 @@ public class EveryTest
   @Test
   public void testExecuteAndNotFound () throws Exception
   {
-    Integer[] nums = {3, 3, 3, 4};
+    final Integer[] nums = {3, 3, 3, 4};
 
     Future future =
         new Every<> (Executors.newCachedThreadPool (),
-                    new Task<Integer> ()
-                    {
-                      @Override
-                      public void run (Integer item, CompletionCallback callback)
-                      {
-                        callback.done (item == 3);
-                      }
-                    }).execute (Arrays.asList (nums), new CompletionCallback ()
+                     new Task<Integer> ()
+                     {
+                       @Override
+                       public void run (Integer item, CompletionCallback callback)
+                       {
+                         callback.done (item == 3);
+                       }
+                     }).execute (Arrays.asList (nums), new CompletionCallback<Boolean> ()
         {
           @Override
           public void onFail (Throwable e)
@@ -96,7 +96,7 @@ public class EveryTest
           }
 
           @Override
-          public void onComplete (Object result)
+          public void onComplete (Boolean result)
           {
             Assert.assertEquals (false, result);
             callbackCalled_ = true;

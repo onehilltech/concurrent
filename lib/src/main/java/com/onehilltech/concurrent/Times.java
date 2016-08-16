@@ -1,8 +1,14 @@
 package com.onehilltech.concurrent;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
+/**
+ * @class Times
+ *
+ * Execute a Task object n times.
+ */
 public class Times
 {
   /// Target executor that executes the tasks.
@@ -29,12 +35,17 @@ public class Times
    * @param callback          Callback for the task
    * @return                  Future for managing tasks
    */
-  public Future execute (int times, CompletionCallback callback)
+  public <T> Future execute (int times, CompletionCallback <List <T>> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
 
-    TaskManagerImpl taskManager = new TaskManagerImpl (this.executor_, this.task_, times, callback);
+    TaskManagerImpl <T> taskManager =
+        new TaskManagerImpl (this.executor_,
+                             this.task_,
+                             times,
+                             callback);
+
     this.executor_.execute (taskManager);
 
     return new Future (taskManager);
@@ -43,12 +54,15 @@ public class Times
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager <ArrayList <Object>>
+  private class TaskManagerImpl <T> extends TaskManager <List<T>>
   {
     private int times_;
     private Task task_;
 
-    private TaskManagerImpl (Executor executor, Task task, int times, CompletionCallback callback)
+    private TaskManagerImpl (Executor executor,
+                             Task task,
+                             int times,
+                             CompletionCallback <List <T>> callback)
     {
       super (executor, callback);
       this.task_ = task;
@@ -67,16 +81,16 @@ public class Times
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      this.task_.run (this.result_.size (), new TaskCompletionCallback (this.task_));
-    }
+      int index = this.result_.size ();
 
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      // Push the result onto the result set, then run the executor again.
-      this.result_.add (result);
-
-      this.executor_.execute (this);
+      this.task_.run (index, new TaskCompletionCallback <T> (this.task_) {
+        @Override
+        protected void onComplete (T result)
+        {
+          result_.add (result);
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }

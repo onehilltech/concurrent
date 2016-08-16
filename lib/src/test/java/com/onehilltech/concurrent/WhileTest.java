@@ -46,7 +46,7 @@ public class WhileTest
 
     synchronized (whilst)
     {
-      Future future = whilst.execute (new CompletionCallback ()
+      Future future = whilst.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -105,7 +105,7 @@ public class WhileTest
 
     synchronized (whilst)
     {
-      Future future = whilst.execute (new CompletionCallback ()
+      Future future = whilst.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -170,7 +170,7 @@ public class WhileTest
 
     synchronized (whilst)
     {
-      Future future = whilst.execute (new CompletionCallback ()
+      Future future = whilst.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)

@@ -38,7 +38,7 @@ public class While
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Object> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -58,7 +58,7 @@ public class While
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl extends TaskManager <Object>
   {
     private final Conditional cond_;
     private final Task task_;
@@ -66,7 +66,7 @@ public class While
     private TaskManagerImpl (Executor executor,
                              Conditional cond,
                              Task task,
-                             CompletionCallback callback)
+                             CompletionCallback <Object> callback)
     {
       super (executor, callback);
       this.cond_ = cond;
@@ -83,14 +83,14 @@ public class While
     public void onRun ()
     {
       // Run the task since the condition is still true.
-      this.task_.run (null, new TaskCompletionCallback (this.task_));
-    }
-
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      this.result_ = result;
-      this.executor_.execute (this);
+      this.task_.run (null, new TaskCompletionCallback <Object> (this.task_) {
+        @Override
+        protected void onComplete (Object result)
+        {
+          result_ = result;
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }

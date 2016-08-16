@@ -62,7 +62,7 @@ public class ForEachTest
 
     synchronized (this)
     {
-      this.wait ();
+      this.wait (5000);
 
       Assert.assertEquals (15, sum.get ());
       Assert.assertTrue (future.isDone ());

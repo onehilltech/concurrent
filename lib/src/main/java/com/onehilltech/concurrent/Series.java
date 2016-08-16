@@ -1,6 +1,7 @@
 package com.onehilltech.concurrent;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 
 public class Series
@@ -29,7 +30,7 @@ public class Series
    * @param callback          Callback for the task
    * @return                  Future for managing tasks
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Map <String, Object>> callback)
   {
     if (callback == null)
       throw new IllegalArgumentException ("Callback cannot be null");
@@ -43,14 +44,17 @@ public class Series
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager <HashMap <String, Object>>
+  private class TaskManagerImpl extends TaskManager <Map <String, Object>>
   {
     private int current_ = 0;
     private Task [] tasks_;
 
-    private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
+    private TaskManagerImpl (Executor executor,
+                             Task [] tasks,
+                             CompletionCallback <Map <String, Object>> callback)
     {
       super (executor, callback);
+
       this.tasks_ = tasks;
       this.result_ = new HashMap< > ();
     }
@@ -61,30 +65,32 @@ public class Series
     }
 
     @Override
+    @SuppressWarnings ("unchecked")
     public void onRun ()
     {
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
       Task task = this.tasks_[this.current_];
-      task.run (null, new TaskCompletionCallback (task));
-    }
 
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      // Store the result either under the name of the task, or the index of the task.
-      String taskName = task.getName ();
+      task.run (null, new TaskCompletionCallback <Object> (task) {
+        @Override
+        protected void onComplete (Object result)
+        {
+          // Store the result either under the name of the task, or the index of the task.
+          String taskName = this.task_.getName ();
 
-      if (taskName == null)
-        taskName = Integer.toString (this.current_);
+          if (taskName == null)
+            taskName = Integer.toString (current_);
 
-      this.result_.put (taskName, result);
+          result_.put (taskName, result);
 
-      // Increment the current task, and then run the executor again.
-      ++ this.current_;
+          // Increment the current task, and then run the executor again.
+          ++ current_;
 
-      this.executor_.execute (this);
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }

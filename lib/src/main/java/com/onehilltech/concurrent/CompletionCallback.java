@@ -5,7 +5,7 @@ package com.onehilltech.concurrent;
  *
  * Callback used to signal completion of a task.
  */
-public abstract class CompletionCallback
+public abstract class CompletionCallback <T>
 {
   /**
    * The task is done with no result.
@@ -20,7 +20,7 @@ public abstract class CompletionCallback
    *
    * @param result        Result of the task
    */
-  public void done (Object result)
+  public void done (T result)
   {
     this.onComplete (result);
   }
@@ -52,5 +52,5 @@ public abstract class CompletionCallback
    *
    * @param result
    */
-  protected abstract void onComplete (Object result);
+  protected abstract void onComplete (T result);
 }

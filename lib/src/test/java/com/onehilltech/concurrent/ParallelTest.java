@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class ParallelTest
@@ -55,19 +56,15 @@ public class ParallelTest
 
     synchronized (parallel)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = parallel.execute (new CompletionCallback <Map<String, Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (Map <String, Object> result)
         {
-          Assert.assertEquals (HashMap.class, result.getClass ());
-
-          HashMap <String, Object> map = (HashMap<String, Object>)result;
-
-          Assert.assertEquals (3, map.size ());
-          Assert.assertEquals (map.get ("task-0"), "0");
-          Assert.assertEquals (map.get ("task-1"), "1");
-          Assert.assertEquals (map.get ("task-2"), "2");
+          Assert.assertEquals (3, result.size ());
+          Assert.assertEquals (result.get ("task-0"), "0");
+          Assert.assertEquals (result.get ("task-1"), "1");
+          Assert.assertEquals (result.get ("task-2"), "2");
 
           callbackCalled_ = true;
 
@@ -119,10 +116,10 @@ public class ParallelTest
 
     synchronized (parallel)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = parallel.execute (new CompletionCallback <Map<String, Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (Map<String, Object> result)
         {
           Assert.fail ();
         }
@@ -183,10 +180,10 @@ public class ParallelTest
 
     synchronized (parallel)
     {
-      Future future = parallel.execute (new CompletionCallback ()
+      Future future = parallel.execute (new CompletionCallback <Map<String, Object>> ()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (Map<String, Object> result)
         {
           Assert.fail ();
         }

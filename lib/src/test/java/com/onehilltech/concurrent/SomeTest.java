@@ -31,7 +31,7 @@ public class SomeTest
                          {
                            callback.done (item == 5);
                          }
-                       }).execute (Arrays.asList (nums), new CompletionCallback ()
+                       }).execute (Arrays.asList (nums), new CompletionCallback <Boolean> ()
         {
           @Override
           public void onFail (Throwable e)
@@ -46,9 +46,9 @@ public class SomeTest
           }
 
           @Override
-          public void onComplete (Object result)
+          public void onComplete (Boolean result)
           {
-            Assert.assertEquals (true, result);
+            Assert.assertTrue (result);
             callbackCalled_ = true;
 
             synchronized (SomeTest.this)
@@ -81,7 +81,7 @@ public class SomeTest
                       {
                         callback.done (item == 6);
                       }
-                    }).execute (Arrays.asList (nums), new CompletionCallback ()
+                    }).execute (Arrays.asList (nums), new CompletionCallback <Boolean> ()
         {
           @Override
           public void onFail (Throwable e)
@@ -96,7 +96,7 @@ public class SomeTest
           }
 
           @Override
-          public void onComplete (Object result)
+          public void onComplete (Boolean result)
           {
             Assert.assertEquals (false, result);
             callbackCalled_ = true;

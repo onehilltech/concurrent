@@ -49,7 +49,7 @@ public class DoWhileTest
 
     synchronized (doWhile)
     {
-      Future future = doWhile.execute (new CompletionCallback ()
+      Future future = doWhile.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -108,7 +108,7 @@ public class DoWhileTest
 
     synchronized (doWhile)
     {
-      Future future = doWhile.execute (new CompletionCallback ()
+      Future future = doWhile.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)
@@ -173,7 +173,7 @@ public class DoWhileTest
 
     synchronized (doWhile)
     {
-      Future future = doWhile.execute (new CompletionCallback ()
+      Future future = doWhile.execute (new CompletionCallback <Object> ()
       {
         @Override
         public void onComplete (Object result)

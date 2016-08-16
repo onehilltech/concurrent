@@ -45,21 +45,20 @@ public class Race
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager <HashMap <String, Object>>
+  private class TaskManagerImpl extends TaskManager <NamedResult <Object>>
   {
     private List<Task> tasks_;
-    private Task firstTaskToComplete_;
+    private final Object syncLock_ = new Object ();
 
     private TaskManagerImpl (Executor executor, Task [] tasks, CompletionCallback callback)
     {
       super (executor, callback);
       this.tasks_ = Arrays.asList (tasks);
-      this.result_ = new HashMap< > ();
     }
 
     public boolean isDone ()
     {
-      return this.firstTaskToComplete_ != null;
+      return this.result_ != null;
     }
 
     @Override
@@ -73,14 +72,16 @@ public class Race
         this.executor_.execute (new RaceTask (task));
     }
 
-    @Override
-    public void onTaskComplete (Task task, Object result)
+    private void onTaskComplete (Task task, Object result)
     {
-      // We only accept the first task to complete.
-      if (this.firstTaskToComplete_ != null)
-        return;
+      synchronized (this.syncLock_)
+      {
+        // We only accept the first task to complete.
+        if (this.result_ != null)
+          return;
 
-      this.firstTaskToComplete_ = task;
+        this.result_ = new NamedResult ();
+      }
 
       // Get the name of task, or compute one based on how many tasks have
       // already finished.
@@ -96,7 +97,9 @@ public class Race
         taskName = Integer.toString (index);
       }
 
-      this.result_.put (taskName, result);
+      // Set the name and result.
+      this.result_.name = taskName;
+      this.result_.result = result;
 
       // We are done, let's go home.
       this.done ();
@@ -117,7 +120,13 @@ public class Race
         try
         {
           if (canContinue ())
-            this.task_.run (null, new TaskCompletionCallback (this.task_));
+            this.task_.run (null, new TaskCompletionCallback <Object> (this.task_) {
+              @Override
+              protected void onComplete (Object result)
+              {
+                onTaskComplete (this.task_, result);
+              }
+            });
         }
         catch (Exception e)
         {

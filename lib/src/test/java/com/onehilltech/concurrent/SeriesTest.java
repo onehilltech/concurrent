@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class SeriesTest
@@ -45,17 +46,14 @@ public class SeriesTest
 
     synchronized (series)
     {
-      Future future = series.execute (new CompletionCallback ()
+      Future future = series.execute (new CompletionCallback <Map<String, Object>>()
       {
         @Override
-        public void onComplete (Object result)
+        public void onComplete (Map <String, Object> result)
         {
-          Assert.assertTrue ((result instanceof HashMap));
-
-          HashMap <String, Object> map = (HashMap<String, Object>)result;
-
-          Assert.assertEquals (map.get ("task-0"), "0");
-          Assert.assertEquals (map.get ("1"), "1");
+          Assert.assertEquals (2, result.size ());
+          Assert.assertEquals (result.get ("task-0"), "0");
+          Assert.assertEquals (result.get ("1"), "1");
 
           callbackCalled_ = true;
 

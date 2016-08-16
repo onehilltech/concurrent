@@ -1,6 +1,11 @@
 package com.onehilltech.concurrent;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.logging.StreamHandler;
 
 public class Waterfall
 {
@@ -46,7 +51,7 @@ public class Waterfall
    * @param callback          Callback for the task
    * @return
    */
-  public Future execute (CompletionCallback callback)
+  public Future execute (CompletionCallback <Object> callback)
   {
     return this.execute (null, callback);
   }
@@ -54,21 +59,23 @@ public class Waterfall
   /**
    * Implementation of the TaskManager for the waterfall
    */
-  private class TaskManagerImpl extends TaskManager
+  private class TaskManagerImpl extends TaskManager <Object>
   {
-    private int currentTask_ = 0;
-    private Task [] tasks_;
+    private Iterator <Task> tasks_;
 
-    private TaskManagerImpl (Executor executor, Task [] tasks, Object seed, CompletionCallback callback)
+    private TaskManagerImpl (Executor executor,
+                             Task [] tasks,
+                             Object seed,
+                             CompletionCallback <Object> callback)
     {
       super (executor, callback);
-      this.tasks_ = tasks;
+      this.tasks_ = Arrays.asList (tasks).iterator ();
       this.result_ = seed;
     }
 
     public boolean isDone ()
     {
-      return this.currentTask_ >= this.tasks_.length;
+      return !this.tasks_.hasNext ();
     }
 
     @Override
@@ -77,20 +84,17 @@ public class Waterfall
       // Get the current task, and run the task. The task will callback into
       // this task manager when the task completes, or fails. We also catch
       // all exceptions.
-      Task task = this.tasks_[this.currentTask_];
-      task.run (this.result_, new TaskCompletionCallback (task));
-    }
+      Task task = this.tasks_.next ();
 
-    @Override
-    public void onTaskComplete (Task task, Object result)
-    {
-      // Store the result of the task as the last result.
-      this.result_ = result;
-
-      // Increment to the next task, and execute the task manager again.
-      ++ this.currentTask_;
-
-      this.executor_.execute (this);
+      task.run (this.result_, new TaskCompletionCallback <Object> (task) {
+        @Override
+        protected void onComplete (Object result)
+        {
+          // Store the result of the task as the last result.
+          result_ = result;
+          rerunTaskManager ();
+        }
+      });
     }
   }
 }
