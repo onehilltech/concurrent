@@ -40,7 +40,7 @@ android {
 }
 
 dependencies {
-    compile 'com.github.onehilltech:concurrent:0.4.0'
+    compile project (':lib')
 
     androidTestCompile 'junit:junit:4.11'
     androidTestCompile('com.android.support.test:testing-support-lib:0.1') {
