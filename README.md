@@ -9,7 +9,7 @@ Utility library of concurrent execution strategies for JVM and Android
 * Inspired by [async](http://caolan.github.io/async) for JavaScript and Node.js.
 * Execute collection iterators and control flow strategies concurrently in the background.
 * Callbacks are notified when strategies are complete, cancelled, or error out.
-* Android extensions execute callbacks on the UI thread
+* Android extensions execute final callbacks on the UI thread.
 
 ## Installation
 
