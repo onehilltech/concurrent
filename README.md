@@ -74,7 +74,8 @@ Concurrent.getDefault ().series (
   });
 ```
 
-The second method is to create the concurrent strategy on an existing executor:
+The second method is to create the concurrent strategy on an existing 
+`Executor` object:
 
 ```java
 Series series = new Series (executor,
