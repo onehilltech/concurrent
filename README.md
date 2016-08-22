@@ -2,6 +2,8 @@ concurrent
 ==========
 
 [![Build Status](https://travis-ci.org/onehilltech/concurrent.svg?branch=master)](https://travis-ci.org/onehilltech/concurrent.svg?branch=master)
+[![](https://jitpack.io/v/onehilltech/concurrent.svg)](https://jitpack.io/#onehilltech/concurrent)
+
 
 Utility library of concurrent execution strategies for JVM and Android
 
@@ -14,7 +16,7 @@ Utility library of concurrent execution strategies for JVM and Android
 
 ### Gradle
 
-```groovy
+```
 buildscript {
   repositories {
     maven { url "https://jitpack.io" }
