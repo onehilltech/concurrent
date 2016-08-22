@@ -165,3 +165,13 @@ Concurrent.getDefault ().waterfall (
     }  
   });
 ```
+
+## Next Steps
+
+For more details on the strategies supports in 
+[Concurrent](https://github.com/onehilltech/concurrent), please refer to the
+documentation of [async](http://caolan.github.io/async). Each strategy in 
+[Concurrent](https://github.com/onehilltech/concurrent) mirrors the behavior
+of its corresponding strategy in [async](http://caolan.github.io/async).
+
+Happy Coding!
