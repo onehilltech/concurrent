@@ -1,2 +1,2 @@
-include ':lib',
-        ':android-concurrent'
+include ':concurrent-core',
+        ':concurrent-android'
