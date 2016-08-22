@@ -1,4 +1,4 @@
-Concurrent
+concurrent
 ==========
 
 a simple, lightweight framework for running concurrent tasks in Java
