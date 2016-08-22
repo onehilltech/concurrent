@@ -53,7 +53,7 @@ Concurrent.getDefault ().series (
     public void run (Object unused, CompletionCallback callback) {
       callback.done ("2");
     }  
-  }).execute (new CompleteCallack <Map <String, Object>> () {
+  }).execute (new CompletionCallack <Map <String, Object>> () {
     @Override
     public void onComplete (Map <String, Object> result) {
       // result.get ("task-1") equals "1"
@@ -90,7 +90,7 @@ Series series = new Series (executor,
     public void run (Object unused, CompletionCallback callback) {
       callback.done ("2");
     }  
-  }).execute (new CompleteCallack <Map <String, Object>> () {
+  }).execute (new CompletionCallack <Map <String, Object>> () {
     @Override
     public void onComplete (Map <String, Object> result) {
       // result.get ("task-1") equals "1"
@@ -146,7 +146,7 @@ Concurrent.getDefault ().waterfall (
           }
         }).execute (users, callback);
     }  
-  }).execute (new CompleteCallack <Map <String, Object>> () {
+  }).execute (new CompletionCallack <Map <String, Object>> () {
     @Override
     public void onComplete (Object lastResult) { 
       // the tasks are complete
