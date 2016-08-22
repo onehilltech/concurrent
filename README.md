@@ -33,3 +33,82 @@ dependencies {
   compile com.github.onehilltech.concurrent:concurrent-android:x.y.z
 }
 ```
+
+## Quick Start
+
+Each strategy is implemented atop an `Executor` object. There are two ways to 
+execute a concurrent strategy. The first method is to use the default
+executor:
+
+```java
+Concurrent.getDefault ().series (
+  new Task ("task-1") {
+    @Override
+    public void run (Object unused, CompletionCallback callback) {
+      callback.done ("1");
+    }
+  },
+  new Task ("task-2") {
+    @Override
+    public void run (Object unused, CompletionCallback callback) {
+      callback.done ("2");
+    }  
+  }).execute (new CompleteCallack <Map <String, Object>> () {
+    @Override
+    public void onComplete (Map <String, Object> result) {
+      // result.get ("task-1") equals "1"
+      // result.get ("task-2") equals "2"
+    }
+
+    @Override
+    public void onFail (Throwable e)
+    {
+      // one of the tasks failed
+    }
+
+    @Override
+    public void onCancel ()
+    {
+      // the series of tasks where cancelled
+    }  
+  });
+```
+
+The second method is to create the concurrent strategy on an existing executor:
+
+```java
+Series series = new Series (executor,
+  new Task ("task-1") {
+    @Override
+    public void run (Object unused, CompletionCallback callback) {
+      callback.done ("1");
+    }
+  },
+  new Task ("task-2") {
+    @Override
+    public void run (Object unused, CompletionCallback callback) {
+      callback.done ("2");
+    }  
+  }).execute (new CompleteCallack <Map <String, Object>> () {
+    @Override
+    public void onComplete (Map <String, Object> result) {
+      // result.get ("task-1") equals "1"
+      // result.get ("task-2") equals "2"
+    }
+
+    @Override
+    public void onFail (Throwable e)
+    {
+      // one of the tasks failed
+    }
+
+    @Override
+    public void onCancel ()
+    {
+      // the series of tasks where cancelled
+    }  
+  });
+```
+
+### Chaining Concurrent Strategies
+
