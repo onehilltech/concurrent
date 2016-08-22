@@ -14,7 +14,7 @@ Utility library of concurrent execution strategies for JVM and Android
 
 ### Gradle
 
-```groovy
+```
 buildscript {
   repositories {
     maven { url "https://jitpack.io" }
