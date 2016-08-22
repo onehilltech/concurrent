@@ -113,3 +113,55 @@ Series series = new Series (executor,
 
 ### Chaining Concurrent Strategies
 
+Concurrent strategies can be chained together. This is because the `CompletionCallback`
+parameter in the `Task.run` method can be passed as the `CompletionCallback`
+parameter to the `Task.execute` method.
+
+Here is an example of downloading a result, and then iterating over the
+values in the result:
+
+```java
+Concurrent.getDefault ().waterfall (
+  new Task ("download-users") {
+    @Override
+    public void run (Object lastResult, CompletionCallback callback) {
+      List <User> users;
+      
+      // GET /users
+      
+      callback.done (users);
+    }
+  },
+  new Task ("save-users") {
+    @Override
+    public void run (Object lastResult, CompletionCallback callback) {
+      List <User> users = (List <User>)lastResult;
+      
+      Concurrent.getDefault ().forEach (
+        new Task <User> () {
+          @Override
+          public void run (User user, CompletionCallack callback) {
+            // save the user
+            callback.done ();
+          }
+        }).execute (users, callback);
+    }  
+  }).execute (new CompleteCallack <Map <String, Object>> () {
+    @Override
+    public void onComplete (Object lastResult) { 
+      // the tasks are complete
+    }
+
+    @Override
+    public void onFail (Throwable e)
+    {
+      // one of the tasks failed
+    }
+
+    @Override
+    public void onCancel ()
+    {
+      // the series of tasks where cancelled
+    }  
+  });
+```
