@@ -8,6 +8,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Queue
 {
+  public interface OnDrainListener
+  {
+    void onDrain (Queue queue);
+  }
+
   private final Executor executor_;
 
   private final java.util.Queue <PendingTask> pendingTasks_;
@@ -17,6 +22,8 @@ public class Queue
   private int concurrency_;
 
   private boolean isCancelled_ = false;
+
+  private OnDrainListener onDrainListener_;
 
   /**
    * Initialing constructor.
@@ -107,9 +114,10 @@ public class Queue
     // Increment the number of slots remaining.
     this.remaining_.incrementAndGet ();
 
-    // Run the next task in the queue if not empty.
     if (!this.pendingTasks_.isEmpty ())
       this.addTaskRunnerToQueue ();
+    else
+      this.onDrainListener_.onDrain (this);
   }
 
   /**
@@ -135,6 +143,19 @@ public class Queue
   public void cancel ()
   {
     this.isCancelled_ = true;
+  }
+
+  public OnDrainListener setOnDrainListener (OnDrainListener onDrainListener)
+  {
+    OnDrainListener oldListener = this.onDrainListener_;
+    this.onDrainListener_ = onDrainListener;
+
+    return oldListener;
+  }
+
+  public OnDrainListener getOnDrainListener ()
+  {
+    return this.onDrainListener_;
   }
 
   /**
