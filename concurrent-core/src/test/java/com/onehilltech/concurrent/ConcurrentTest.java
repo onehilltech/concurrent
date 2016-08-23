@@ -49,6 +49,7 @@ public class ConcurrentTest
     Assert.assertEquals (During.class, Concurrent.getDefault ().during (this.conditionalTask_, this.singleTask_).getClass ());
     Assert.assertEquals (Forever.class, Concurrent.getDefault ().forever (this.singleTask_).getClass ());
     Assert.assertEquals (Parallel.class, Concurrent.getDefault ().parallel (this.singleTask_).getClass ());
+    Assert.assertEquals (Queue.class, Concurrent.getDefault ().queue (1).getClass ());
     Assert.assertEquals (Race.class, Concurrent.getDefault ().race (this.singleTask_).getClass ());
     Assert.assertEquals (Retry.class, Concurrent.getDefault ().retry (this.singleTask_).getClass ());
     Assert.assertEquals (Series.class, Concurrent.getDefault ().series (this.singleTask_).getClass ());

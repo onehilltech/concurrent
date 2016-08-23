@@ -80,6 +80,11 @@ public class Concurrent
     return new Parallel (this.executor_, tasks);
   }
 
+  public Queue queue (int concurrency)
+  {
+    return new Queue (this.executor_, concurrency);
+  }
+
   public Race race (Task ... tasks)
   {
     return new Race (this.executor_, tasks);
