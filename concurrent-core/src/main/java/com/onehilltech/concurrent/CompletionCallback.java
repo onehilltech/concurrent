@@ -28,19 +28,19 @@ public abstract class CompletionCallback <T>
   /**
    * The task failed.
    *
-   * @param e             Reason for failure
+   * @param reason        Reason for failure
    */
-  public void fail (Throwable e)
+  public void fail (Throwable reason)
   {
-    this.onFail (e);
+    this.onFail (reason);
   }
 
   /**
    * Handle notification that the task has failed.
    *
-   * @param e
+   * @param reason        Reason for failure
    */
-  protected abstract void onFail (Throwable e);
+  protected abstract void onFail (Throwable reason);
 
   /**
    * Handle notification that the task, or tasks, was cancelled.

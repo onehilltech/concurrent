@@ -100,15 +100,7 @@ abstract class TaskManager <T>
       return;
 
     this.failure_ = e;
-
-    this.executor_.execute (new Runnable ()
-    {
-      @Override
-      public void run ()
-      {
-        completionCallback_.onFail (failure_);
-      }
-    });
+    this.executor_.execute (new OnFail (this.completionCallback_, this.failure_));
   }
 
   /**
@@ -121,19 +113,7 @@ abstract class TaskManager <T>
       throw new IllegalStateException ("Task manager is not done");
 
     if (!this.isCancelled_ && this.failure_ == null)
-    {
-      // We can execute the completion callback since everything is done and there
-      // are not errors, and the tasks were not cancelled.
-
-      this.executor_.execute (new Runnable ()
-      {
-        @Override
-        public void run ()
-        {
-          completionCallback_.onComplete (result_);
-        }
-      });
-    }
+      this.executor_.execute (new OnComplete (completionCallback_, result_));
   }
 
   protected synchronized boolean canContinue ()
