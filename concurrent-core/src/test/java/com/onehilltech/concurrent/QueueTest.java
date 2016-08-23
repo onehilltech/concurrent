@@ -9,7 +9,6 @@ import java.util.concurrent.Executors;
 
 public class QueueTest
 {
-  private int concurrency_;
   private boolean isCalled_;
   private final ArrayList <Integer> nums_ = new ArrayList<> ();
   private int size_;
