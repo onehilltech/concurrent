@@ -1,6 +1,4 @@
-language:
-  - java
-  - android
+language: android
 
 sudo: false
 
