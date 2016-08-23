@@ -1,9 +1,9 @@
 package com.onehilltech.concurrent;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Queue
@@ -17,7 +17,7 @@ public class Queue
 
   private final java.util.Queue <PendingTask> pendingTasks_;
 
-  private AtomicInteger remaining_;
+  private AtomicInteger execSlots_;
 
   private int concurrency_;
 
@@ -33,7 +33,7 @@ public class Queue
    */
   public Queue (Executor executor, int concurrency)
   {
-    this (new LinkedList<PendingTask> (), executor, concurrency);
+    this (new LinkedBlockingQueue<PendingTask> (), executor, concurrency);
   }
 
   /**
@@ -48,7 +48,7 @@ public class Queue
     this.pendingTasks_ = queueImpl;
     this.executor_ = executor;
     this.concurrency_ = concurrency;
-    this.remaining_ = new AtomicInteger (concurrency);
+    this.execSlots_ = new AtomicInteger (concurrency);
   }
 
   /**
@@ -56,11 +56,16 @@ public class Queue
    *
    * @param task
    */
-  public synchronized void push (Task task, CompletionCallback callback)
+  public void push (Task task, CompletionCallback callback)
   {
-    this.pendingTasks_.add (new PendingTask (task, callback));
+    this.push (new PendingTask (task, callback));
+  }
 
-    if (this.remaining_.get () > 0)
+  protected void push (PendingTask pendingTask)
+  {
+    this.pendingTasks_.add (pendingTask);
+
+    if (this.execSlots_.get () > 0)
       this.addTaskRunnerToQueue ();
   }
 
@@ -88,7 +93,7 @@ public class Queue
   /**
    * Add a new TaskRunner object to the executor's queue.
    */
-  private synchronized void addTaskRunnerToQueue ()
+  private void addTaskRunnerToQueue ()
   {
     if (!this.isCancelled_)
     {
@@ -96,7 +101,7 @@ public class Queue
       this.executor_.execute (new TaskRunner ());
 
       // Decrement the number of remaining slots.
-      this.remaining_.decrementAndGet ();
+      this.execSlots_.decrementAndGet ();
     }
   }
 
@@ -112,7 +117,7 @@ public class Queue
     this.executor_.execute (new OnComplete (callback, result));
 
     // Increment the number of slots remaining.
-    this.remaining_.incrementAndGet ();
+    this.execSlots_.incrementAndGet ();
 
     if (!this.pendingTasks_.isEmpty ())
       this.addTaskRunnerToQueue ();
@@ -193,7 +198,7 @@ public class Queue
   /**
    * Wrapper class for a PendingTask.
    */
-  private class PendingTask
+  protected class PendingTask
   {
     private final Task task;
     private final CompletionCallback callback;
