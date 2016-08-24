@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 
-public class QueueTest
+public class PriorityQueueTest
 {
   private boolean isCalled_;
   private final ArrayList <Integer> nums_ = new ArrayList<> ();
@@ -21,20 +21,38 @@ public class QueueTest
   }
 
   @Test
-  public void testPushSingleConcurrency () throws Exception
+  public void testAscendingPriority () throws Exception
   {
-    this.runPushTest (1);
+    this.runPushTest (1, PriorityQueue.ASCENDING_PRIORITY);
+
+    for (int i = 0; i < this.size_; ++ i)
+    {
+      int actual = this.nums_.get (i);
+      Assert.assertEquals (i, actual);
+    }
   }
 
   @Test
-  public void testPushMultiConcurrency () throws Exception
+  public void testDescendingPriority () throws Exception
   {
-    this.runPushTest (3);
+    this.runPushTest (1, PriorityQueue.DESCENDING_PRIORITY);
+
+    for (int i = 0; i < this.size_; ++ i)
+    {
+      int actual = this.nums_.get (i);
+      Assert.assertEquals ((this.nums_.size () - i - 1), actual);
+    }
   }
 
-  private void runPushTest (int concurrency) throws Exception
+  private void runPushTest (int concurrency, PriorityQueue.PriorityComparator comparator)
+      throws Exception
   {
-    final Queue queue = new Queue (Executors.newCachedThreadPool (), concurrency);
+    final PriorityQueue queue =
+        new PriorityQueue (
+            Executors.newCachedThreadPool (),
+            concurrency,
+            comparator);
+
     final CompletionCallback callback = new CompletionCallback ()
     {
       @Override
@@ -52,10 +70,7 @@ public class QueueTest
       @Override
       protected void onComplete (Object result)
       {
-        int index = (Integer)result;
-        int actual = nums_.get (index);
 
-        Assert.assertEquals (index, actual);
       }
     };
 
@@ -64,16 +79,16 @@ public class QueueTest
       @Override
       public void onDrain (Queue queue)
       {
-        synchronized (QueueTest.this)
+        synchronized (PriorityQueueTest.this)
         {
           isCalled_ = true;
-          QueueTest.this.notify ();
+          PriorityQueueTest.this.notify ();
         }
       }
     });
 
     for (int i = 0; i < this.size_; ++ i)
-      queue.push (new CounterTask (i), callback);
+      queue.push (i, new CounterTask (i), callback);
 
     synchronized (this)
     {
@@ -96,10 +111,8 @@ public class QueueTest
     @Override
     public void run (Object item, CompletionCallback callback)
     {
-      // Push the number onto the list.
       nums_.add (this.index_);
 
-      // We are done!
       callback.done (this.index_);
     }
   }

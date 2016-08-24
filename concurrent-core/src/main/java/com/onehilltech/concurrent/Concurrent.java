@@ -80,6 +80,24 @@ public class Concurrent
     return new Parallel (this.executor_, tasks);
   }
 
+  public PriorityQueue priorityQueue (int concurrency)
+  {
+    return new PriorityQueue (this.executor_, concurrency);
+  }
+
+  public PriorityQueue priorityQueue (int concurrency,
+                                      PriorityQueue.PriorityComparator comparator)
+  {
+    return new PriorityQueue (this.executor_, concurrency, comparator);
+  }
+
+  public PriorityQueue priorityQueue (int concurrency,
+                                      PriorityQueue.PriorityComparator comparator,
+                                      int defaultPriority)
+  {
+    return new PriorityQueue (this.executor_, concurrency, comparator, defaultPriority);
+  }
+
   public Queue queue (int concurrency)
   {
     return new Queue (this.executor_, concurrency);
