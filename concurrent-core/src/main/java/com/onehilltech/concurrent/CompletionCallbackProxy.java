@@ -9,8 +9,14 @@ package com.onehilltech.concurrent;
  */
 public class CompletionCallbackProxy extends CompletionCallback
 {
+  /// Target completion callback.
   private final CompletionCallback callback_;
 
+  /**
+   * Initializing constructor.
+   *
+   * @param callback        Target callback
+   */
   public CompletionCallbackProxy (CompletionCallback callback)
   {
     this.callback_ = callback;
