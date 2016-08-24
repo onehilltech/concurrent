@@ -167,6 +167,11 @@ Concurrent.getDefault ().waterfall (
   });
 ```
 
+## Android Support
+
+Use `AndroidCompletionCallback` with the initial `execute` method to ensure 
+the completion methods run on the main UI thread.
+
 ## Next Steps
 
 For more details on the strategies supports in 
