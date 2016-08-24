@@ -2,6 +2,12 @@ package com.onehilltech.concurrent;
 
 import java.util.concurrent.Executor;
 
+/**
+ * Abstract implementation of a TaskManager used by the different concurrent
+ * execution strategies.
+ *
+ * @param <T>
+ */
 abstract class TaskManager <T>
     implements Runnable
 {
