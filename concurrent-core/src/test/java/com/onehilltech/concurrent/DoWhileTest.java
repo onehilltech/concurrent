@@ -47,7 +47,7 @@ public class DoWhileTest
           }
         });
 
-    synchronized (doWhile)
+    synchronized (this)
     {
       Future future = doWhile.execute (new CompletionCallback <Object> ()
       {
@@ -57,9 +57,9 @@ public class DoWhileTest
           Assert.assertEquals ("DONE", result);
           callbackCalled_ = true;
 
-          synchronized (doWhile)
+          synchronized (DoWhileTest.this)
           {
-            doWhile.notify ();
+            DoWhileTest.this.notify ();
           }
         }
 
@@ -76,8 +76,8 @@ public class DoWhileTest
         }
       });
 
-      if (!future.isDone ())
-        doWhile.wait (5000);
+      // Wait for the execution to end.
+      this.wait (5000);
 
       Assert.assertTrue (this.callbackCalled_);
       Assert.assertEquals (-1, this.remaining_);
