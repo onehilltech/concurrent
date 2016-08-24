@@ -3,6 +3,7 @@ concurrent
 
 [![](https://jitpack.io/v/onehilltech/concurrent.svg)](https://jitpack.io/#onehilltech/concurrent)
 [![Build Status](https://travis-ci.org/onehilltech/concurrent.svg?branch=master)](https://travis-ci.org/onehilltech/concurrent)
+[![codecov](https://codecov.io/gh/onehilltech/concurrent/branch/master/graph/badge.svg)](https://codecov.io/gh/onehilltech/concurrent)
 
 Utility library of concurrent execution strategies for JVM and Android
 
