@@ -43,6 +43,9 @@ public class ConcurrentTest
   @Test
   public void testFactoryMethods ()
   {
+    Assert.assertEquals (Constant.class, Concurrent.getDefault ().constant ("max", 7).getClass ());
+    Assert.assertEquals (Constant.class, Concurrent.getDefault ().constant (10).getClass ());
+
     // Control Flow
     Assert.assertEquals (DoUntil.class, Concurrent.getDefault ().doUntil (this.conditional_, this.singleTask_).getClass ());
     Assert.assertEquals (DoWhile.class, Concurrent.getDefault ().doWhile (this.conditional_, this.singleTask_).getClass ());
