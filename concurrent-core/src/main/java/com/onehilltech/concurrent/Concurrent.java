@@ -59,6 +59,31 @@ public final class Concurrent
     return this.executor_;
   }
 
+  /**
+   * Return a Constant object.
+   *
+   * @param constant
+   * @param <T>
+   * @return
+   */
+  public <T> Constant <T> constant (T constant)
+  {
+    return new Constant<T> (constant);
+  }
+
+  /**
+   * Return a named Constant object.
+   *
+   * @param name
+   * @param constant
+   * @param <T>
+   * @return
+   */
+  public <T> Constant <T> constant (String name, T constant)
+  {
+    return new Constant<T> (name, constant);
+  }
+
   /// @{ Control Flow
 
   /**
