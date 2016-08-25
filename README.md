@@ -1,6 +1,7 @@
 concurrent
 ==========
 
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-concurrent-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/4222)
 [![](https://jitpack.io/v/onehilltech/concurrent.svg)](https://jitpack.io/#onehilltech/concurrent)
 [![Build Status](https://travis-ci.org/onehilltech/concurrent.svg?branch=master)](https://travis-ci.org/onehilltech/concurrent)
 [![codecov](https://codecov.io/gh/onehilltech/concurrent/branch/master/graph/badge.svg)](https://codecov.io/gh/onehilltech/concurrent)
