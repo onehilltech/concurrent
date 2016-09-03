@@ -29,10 +29,10 @@ dependencies {
   # in your project.
   
   # for JVM projects
-  compile com.github.onehilltech.concurrent:concurrent-core:x.y.z
+  compile 'com.github.onehilltech.concurrent:concurrent-core:x.y.z'
   
   # for Android projects
-  compile com.github.onehilltech.concurrent:concurrent-android:x.y.z
+  compile 'com.github.onehilltech.concurrent:concurrent-android:x.y.z'
 }
 ```
 
