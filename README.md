@@ -36,6 +36,9 @@ dependencies {
 }
 ```
 
+where `x.y.z` is the latest version: [![](https://jitpack.io/v/onehilltech/concurrent.svg)](https://jitpack.io/#onehilltech/concurrent)
+
+
 ## Quick Start
 
 Each strategy is implemented atop an `Executor` object. There are two ways to 
